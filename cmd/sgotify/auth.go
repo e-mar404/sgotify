@@ -8,45 +8,26 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
-
-	"github.com/joho/godotenv"
 )
 
-const redirectURI = "http://127.0.0.1:8080/callback"
-const authURL = "https://accounts.spotify.com/authorize"
-const tokenURL = "https://accounts.spotify.com/api/token"
+func newAuthRouter(cfg Config) *http.ServeMux {
+	router := http.NewServeMux()
 
-func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal(err)
-	}
-
-	clientID, found := os.LookupEnv("CLIENT_ID")
-	if !found {
-		log.Fatal("client id not found after loading env file")	
-	}
-
-	clientSecret, found := os.LookupEnv("CLIENT_SECRET")
-	if !found {
-		log.Fatal("client secret not found after loading env file")	
-	}
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		query := url.Values{}
 		query.Add("response_type", "code")
-		query.Add("client_id", clientID)
-		query.Add("redirect_uri", redirectURI)
+		query.Add("client_id", cfg.clientID)
+		query.Add("redirect_uri", cfg.redirectURI)
 		query.Add("scope", "streaming user-read-private user-read-email")
 		query.Add("state", "1234567890")
 
-		url := fmt.Sprintf("%s?%s", authURL, query.Encode())
+		url := fmt.Sprintf("%s?%s", cfg.authURL, query.Encode())
 		log.Printf("redirecting from / to %v\n", url)
 		http.Redirect(w, r, url, http.StatusMovedPermanently)
 	})
 
-	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query().Get("code")
 		state := r.URL.Query().Get("state")
 		log.Printf("[/callback] code: %s, state: %s\n", code, state)
@@ -55,14 +36,14 @@ func main() {
 
 		form := url.Values{
 			"grant_type": []string{"authorization_code"},
-			"redirect_uri": []string{redirectURI},
+			"redirect_uri": []string{cfg.redirectURI},
 			"code": []string{code},
 		}
 		formReader := form.Encode()
-		
-		authEncoding := base64.StdEncoding.EncodeToString([]byte(clientID + ":" + clientSecret)) 
 
-		req, _ := http.NewRequest("POST", tokenURL, strings.NewReader(formReader))
+		authEncoding := base64.StdEncoding.EncodeToString([]byte(cfg.clientID + ":" + cfg.clientSecret)) 
+
+		req, _ := http.NewRequest("POST", cfg.tokenURL, strings.NewReader(formReader))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Authorization", "Basic " + authEncoding)
 
@@ -73,11 +54,11 @@ func main() {
 		}
 
 		defer res.Body.Close()
-	
+
 		if res.StatusCode != http.StatusOK {
 			w.Write([]byte("authtoken did not complete properly"))
 		}
-	
+
 		body, _ := io.ReadAll(res.Body)
 		authTokenRes := struct{
 			AccessToken	string	`json:"access_token"`
@@ -93,8 +74,6 @@ func main() {
 		w.Write([]byte("authtoken in logs"))
 	})
 
-	log.Println("listening on port :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
+	return router
 }
+
