@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -70,10 +72,24 @@ func main() {
 			w.Write([]byte("could not complete auth token req"))
 		}
 
-		// TODO: get auth token out of res body
 		defer res.Body.Close()
+	
+		if res.StatusCode != http.StatusOK {
+			w.Write([]byte("authtoken did not complete properly"))
+		}
+	
+		body, _ := io.ReadAll(res.Body)
+		authTokenRes := struct{
+			AccessToken	string	`json:"access_token"`
+			TokenType	string	`json:"token_type"`
+			Scope	string	`json:"scope"`
+			ExpiresIn	int	`json:"expires_in"`
+			RefreshToken	string `json:"refresh_token"`
+		}{}
 
-		log.Printf("tokenURL response: %v\n", res)
+		err = json.Unmarshal(body, &authTokenRes)
+
+		log.Printf("tokenURL response: %v\n", authTokenRes)
 		w.Write([]byte("authtoken in logs"))
 	})
 
