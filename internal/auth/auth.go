@@ -1,29 +1,31 @@
-package main
+package auth
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/internal/config"
 )
 
-func newAuthRouter(cfg Config) *http.ServeMux {
+func NewAuthRouter(cfg config.Config) *http.ServeMux {
 	router := http.NewServeMux()
-
+	
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		query := url.Values{}
 		query.Add("response_type", "code")
-		query.Add("client_id", cfg.clientID)
-		query.Add("redirect_uri", cfg.redirectURI)
+		query.Add("client_id", cfg.ClientID)
+		query.Add("redirect_uri", cfg.RedirectURI)
 		query.Add("scope", "streaming user-read-private user-read-email")
 		query.Add("state", "1234567890")
 
-		url := fmt.Sprintf("%s?%s", cfg.authURL, query.Encode())
-		log.Printf("redirecting from / to %v\n", url)
+		url := fmt.Sprintf("%s?%s", cfg.AuthURL, query.Encode())
+		log.Info("redirecting from /", "authURL", url)
 		http.Redirect(w, r, url, http.StatusMovedPermanently)
 	})
 
@@ -36,14 +38,14 @@ func newAuthRouter(cfg Config) *http.ServeMux {
 
 		form := url.Values{
 			"grant_type": []string{"authorization_code"},
-			"redirect_uri": []string{cfg.redirectURI},
+			"redirect_uri": []string{cfg.RedirectURI},
 			"code": []string{code},
 		}
 		formReader := form.Encode()
 
-		authEncoding := base64.StdEncoding.EncodeToString([]byte(cfg.clientID + ":" + cfg.clientSecret)) 
+		authEncoding := base64.StdEncoding.EncodeToString([]byte(cfg.ClientID + ":" + cfg.ClientSecret)) 
 
-		req, _ := http.NewRequest("POST", cfg.tokenURL, strings.NewReader(formReader))
+		req, _ := http.NewRequest("POST", cfg.TokenURL, strings.NewReader(formReader))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Authorization", "Basic " + authEncoding)
 

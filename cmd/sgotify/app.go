@@ -1,30 +1,28 @@
 package main
 
 import (
-	"log/slog"
-	"net/http"
+	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/internal/config"
 )
 
 type App struct {
-	// TODO: create client
-	// client *sgotifyapi.NewClient()
-	cfg Config
+	cfg config.Config
 }
 
-func (a App) Start() {
-	slog.Info("started app with config")
-	// this can also be done with a command like `sgotify login`
-	slog.Info("no auth token found starting auth process")
+func NewApp() App {
+	log.Info("Creating new app")
 	
-	a.Authenticate()
-}
-
-func (a App) Authenticate() {
-	router := newAuthRouter(a.cfg)
-
-	slog.Info("listening on port :8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		slog.Error("%v", err)
+	// TODO: should a func NewConfig() be created?
+	return App{
+		cfg: config.Config{
+			RedirectURI: "http://127.0.0.1/callback",
+			AuthURL: "",
+			TokenURL: "",
+		},
 	}
 }
 
+func (a App) RunCmd(cmd cmd) error {
+	log.Info("Running cmd", "cmd", cmd)
+	return cmd.callback(a.cfg)	
+}
