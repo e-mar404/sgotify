@@ -1,14 +1,17 @@
 # Sgotify
-*Spotify tui writen in go*
+*Spotify client for neovim writen in go*
 ---
 
 ### Commands to write
 
-These are in the order that they should be written in
+This is the order that they should be written in too
+
+- [ ] sgotify help
+    - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
 
 - [ ] sgotify login
-    - check keyring for existence of clientID, clientSecret, auth token, and
-      auth refresh token
+    - use formated form with bubble tea to get client id & secret
+    - during the same alt screen tui start log in flow with spotify 
     - use .env for clientID & clientSecret for initial load or prompt user for
       them
 
@@ -18,6 +21,6 @@ These are in the order that they should be written in
 - [ ] sgotify profile
     - show some stats similar to neofetch
 
-- [ ] sgotify
-    - this will be the actual ui and music playback, will deal with that
-      whenever the above is done
+- [ ] sgotify start
+    - will start rpc server and then this will connect to the neovim rpc client
+      for the ui, this is the last thing that will be done
