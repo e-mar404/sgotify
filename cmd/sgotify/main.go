@@ -10,7 +10,7 @@ import (
 func main() {
 	if len(os.Args) <= 1 {
 		log.Info("No arguments were provided")
-		cmdList["help"].callback(config.Config{})
+		cmdList["help"].callback(&config.Config{})
 		os.Exit(1)
 	}
 

@@ -6,7 +6,7 @@ import (
 )
 
 type App struct {
-	cfg config.Config
+	cfg *config.Config
 }
 
 func NewApp() App {
@@ -14,10 +14,10 @@ func NewApp() App {
 	
 	// TODO: should a func NewConfig() be created?
 	return App{
-		cfg: config.Config{
+		cfg: &config.Config{
 			RedirectURI: "http://127.0.0.1/callback",
-			AuthURL: "",
-			TokenURL: "",
+			AuthURL: "https://accounts.spotify.com/authorize",
+			TokenURL: "https://accounts.spotify.com/api/token",
 		},
 	}
 }

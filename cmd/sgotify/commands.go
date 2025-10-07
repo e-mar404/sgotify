@@ -8,7 +8,7 @@ import (
 type cmd struct {
 	 name string
 	 description string
-	 callback func(config.Config) error
+	 callback func(*config.Config) error
 }
 
 var cmdList = map[string]cmd {
