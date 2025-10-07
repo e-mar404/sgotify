@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/charmbracelet/log"
+	command "github.com/e-mar404/sgotify/internal/commands"
 	"github.com/e-mar404/sgotify/internal/config"
 )
 
@@ -22,7 +23,7 @@ func NewApp() App {
 	}
 }
 
-func (a App) RunCmd(cmd cmd) error {
+func (a App) RunCmd(cmd command.Cmd) error {
 	log.Info("Running cmd", "cmd", cmd)
-	return cmd.callback(a.cfg)	
+	return cmd.Callback(a.cfg)	
 }

@@ -1,25 +1,28 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/charmbracelet/log"
+	command "github.com/e-mar404/sgotify/internal/commands"
 	"github.com/e-mar404/sgotify/internal/config"
 )
 
 func main() {
+	cmds := command.List()
+
 	if len(os.Args) <= 1 {
-		log.Info("No arguments were provided")
-		cmdList["help"].callback(&config.Config{})
-		os.Exit(1)
+		fmt.Println("No arguments were provided")
+		cmds["help"].Callback(&config.Config{})
+		return
 	}
 
 	rawCmd := os.Args[1]
-
-	cmd, found := cmdList[rawCmd]
+	cmd, found := cmds[rawCmd]
 	if !found {
-		log.Fatal("command not found", "cmd", rawCmd)
-		os.Exit(1)
+		fmt.Printf("command `%v` not found\n", rawCmd)
+		cmds["help"].Callback(&config.Config{})
+		return
 	}
 
 	app := NewApp()
