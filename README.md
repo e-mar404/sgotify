@@ -6,7 +6,7 @@
 
 This is the order that they should be written in too
 
-- [ ] sgotify help
+- [x] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
 
 - [ ] sgotify login
