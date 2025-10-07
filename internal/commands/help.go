@@ -2,19 +2,29 @@ package command
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/e-mar404/sgotify/internal/config"
 )
 
 func Help(_ *config.Config) error {
-	fmt.Println("help menu")
+	s := lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render
+	
+	usage := strings.Builder{}
+	usage.WriteString("Usage:\n\n")
+	usage.WriteString("  sgotify " + s("[command]") + "\n")
+	fmt.Println(usage.String())
+
+	t := table.New()
 
 	cmds := List()
-	fmt.Println("============")
 	for _, cmd := range cmds {
-		fmt.Printf("%s\n", cmd.name)
-		fmt.Printf("%s\n", cmd.description)
+		t.Row(cmd.name, s(cmd.description))
 	}
+	fmt.Println("Command list:")
+	fmt.Println(t.Render())
 
 	return nil
 }
