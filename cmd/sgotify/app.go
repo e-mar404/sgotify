@@ -24,6 +24,6 @@ func NewApp() App {
 }
 
 func (a App) RunCmd(cmd command.Cmd) error {
-	log.Info("Running cmd", "cmd", cmd)
+	log.Info("Running cmd", "cmd", cmd.Name)
 	return cmd.Callback(a.cfg)	
 }

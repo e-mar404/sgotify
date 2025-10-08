@@ -5,19 +5,39 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/zalando/go-keyring"
 )
 
+const service = "sgotify-auth"
 const (
 	cid = iota
 	cs
 )
 
+type sessionState int
+const (
+	promptView = iota
+	inputView
+	authView
+)
+
 type loginModel struct {
+	state sessionState
 	inputs []textinput.Model
 	focused int
 }
 
 func NewLoginModel() loginModel {
+	// Need to check if theyre are pre existing credentials. If there are saved ask if user wasnt to use those or not. If there are no creds send to input screen
+	var state sessionState
+	_, foundCID := keyring.Get(service, "CLIENT_ID")
+	_, foundCS := keyring.Get(service, "CLIENT_SECRET")
+	if foundCID == nil && foundCS == nil {
+		state = promptView 
+	} else {
+		state = inputView 
+	}
+
 	var inputs []textinput.Model = make([]textinput.Model, 2)
 	inputs[cid] = textinput.New()
 	inputs[cid].Placeholder = "CLIENT_ID"
@@ -31,6 +51,7 @@ func NewLoginModel() loginModel {
 	inputs[cs].Prompt = ""
 
 	return loginModel{
+		state: state,
 		inputs:  inputs,
 		focused: 0,
 	}
@@ -43,27 +64,61 @@ func (a loginModel) Init() tea.Cmd {
 func (a loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd = make([]tea.Cmd, len(a.inputs))
 
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEnter:
-			if a.focused == len(a.inputs) - 1 {
-				return a, tea.Quit
-			}
-			a.nextInput()
+	switch a.state {
+	case promptView:
+		switch msg := msg.(type) {
+			case tea.KeyMsg:
+				switch msg.String(){
+					case "y":
+						a.state = authView
+						return a, nil
 
-		case tea.KeyCtrlC, tea.KeyEsc:
-			return a, tea.Quit
+					case "n":
+						a.state = inputView
+						return a, nil
 
-		case tea.KeyShiftTab, tea.KeyCtrlP:
-			a.prevInput()
+					case "ctrl+c", "esc":
+						return a, tea.Quit
+				}
 
-		case tea.KeyTab, tea.KeyCtrlN:
-			a.nextInput()
+			case error:
+				return a, nil
 		}
 
-	case error:
-		return a, nil
+	case inputView:
+		switch msg := msg.(type) {
+			case tea.KeyMsg:
+				switch msg.Type {
+					case tea.KeyEnter:
+						if a.focused == len(a.inputs) - 1 {
+							keyring.Set(service, "CLIENT_ID", a.inputs[cid].Value())
+							keyring.Set(service, "CLIENT_SECRET", a.inputs[cs].Value())
+
+							return a, tea.Quit
+						}
+						a.nextInput()
+
+					case tea.KeyCtrlC, tea.KeyEsc:
+						return a, tea.Quit
+
+					case tea.KeyShiftTab, tea.KeyCtrlP:
+						a.prevInput()
+
+					case tea.KeyTab, tea.KeyCtrlN:
+						a.nextInput()
+				}
+
+			case error:
+				return a, nil
+		}
+	case authView:
+		switch msg := msg.(type) {
+			case tea.KeyMsg:
+				switch msg.Type {
+					case tea.KeyCtrlC, tea.KeyEsc:
+						return a, tea.Quit
+			}
+		}
 	}
 
 	for i := range a.inputs {
@@ -73,15 +128,24 @@ func (a loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (a loginModel) View() string {
-	buf := strings.Builder{}
+	switch a.state {
+	case promptView:
+		return "There are already some credentials saved do you want to use those? [Y|N]"
+	case inputView:
+		buf := strings.Builder{}
 
-	buf.WriteString("Enter Spotify Client ID:\n")
-	buf.WriteString(a.inputs[cid].View() + "\n\n")
-	buf.WriteString("Enter Spotify Client Secret:\n")
-	buf.WriteString(a.inputs[cs].View() + "\n")
-	buf.WriteString("continue ->")
+		buf.WriteString("Enter Spotify Client ID:\n")
+		buf.WriteString(a.inputs[cid].View() + "\n\n")
+		buf.WriteString("Enter Spotify Client Secret:\n")
+		buf.WriteString(a.inputs[cs].View() + "\n")
+		buf.WriteString("continue ->")
 
-	return buf.String()
+		return buf.String()
+	case authView:
+		return "auth view"
+	}
+
+	return "something went terribly wrong"
 } 
 
 func (a *loginModel) nextInput() {

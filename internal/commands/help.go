@@ -21,7 +21,7 @@ func Help(_ *config.Config) error {
 
 	cmds := List()
 	for _, cmd := range cmds {
-		t.Row(cmd.name, s(cmd.description))
+		t.Row(cmd.Name, s(cmd.description))
 	}
 	fmt.Println("Command list:")
 	fmt.Println(t.Render())

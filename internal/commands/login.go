@@ -10,7 +10,7 @@ import (
 func Login(cfg *config.Config) error {
 	p := tea.NewProgram(models.NewLoginModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		log.Error("failed to launch tui", "error", err)
+		log.Error("failed to launch login tui", "error", err)
 		return err
 	}
 

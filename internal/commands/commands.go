@@ -5,7 +5,7 @@ import (
 )
 
 type Cmd struct {
-	 name string
+	 Name string
 	 description string
 	 Callback func(*config.Config) error
 }
@@ -13,12 +13,12 @@ type Cmd struct {
 func List() map[string]Cmd {
 	return map[string]Cmd {
 		"login": {
-			name: "login",
+			Name: "login",
 			description: "Start spotify authentication flow",
 			Callback: Login,
 		},
 		"help": {
-			name: "help",
+			Name: "help",
 			description: "List all available commands",
 			Callback: Help,
 		},
