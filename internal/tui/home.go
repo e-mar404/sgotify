@@ -2,11 +2,11 @@ package tui
 
 import (
 	"log"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/e-mar404/sgotify/internal/tui/constants"
 )
 
@@ -29,6 +29,8 @@ func (h HomeUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, constants.Keymap.Quit):
 			return h, tea.Quit
+		case key.Matches(msg, constants.Keymap.Help):
+			h.help.ShowAll = !h.help.ShowAll
 		}
 	}
 
@@ -40,23 +42,18 @@ func (h HomeUI) View() string {
 		return "loading..."
 	}
 
-	content := lipgloss.Place(
-		constants.WindowSize.Width,
-		constants.WindowSize.Height,	
-		lipgloss.Center,
-		lipgloss.Center,
-		"login page",
-	)
-	helpView := lipgloss.Place(
-		constants.WindowSize.Width,
-		constants.WindowSize.Height,	
-		lipgloss.Center,
-		lipgloss.Bottom,
-		h.help.View(constants.Keymap),
-	)
+	borderOffset := 2
+	helpView := h.help.View(constants.Keymap)
 
+	// +1 accounts for the newline between content and helpView
+	helpOffset := strings.Count(helpView, "\n") + 1 
 
-	return content + helpView 
+	content := constants.WindowStyle.
+		Height(constants.WindowSize.Height - borderOffset - helpOffset). 
+		Width(constants.WindowSize.Width - borderOffset). 
+		Render("login page\nyou're not logged in")
+
+	return content + "\n" + helpView
 }
 
 func newHomeUI() HomeUI {
