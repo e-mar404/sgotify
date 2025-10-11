@@ -1,26 +1,29 @@
 package command
 
-import (
-	"github.com/e-mar404/sgotify/internal/config"
-)
+import "fmt"
 
 type Cmd struct {
 	 Name string
-	 description string
-	 Callback func(*config.Config) error
+	 Description string
+	 Args []string
+	 Callback func() error
 }
 
-func List() map[string]Cmd {
-	return map[string]Cmd {
-		"login": {
-			Name: "login",
-			description: "Start spotify authentication flow",
-			Callback: Login,
-		},
-		"help": {
-			Name: "help",
-			description: "List all available commands",
-			Callback: Help,
-		},
+type Cmds map[string]Cmd
+
+var List = Cmds {
+	"help": {
+		Name: "help",
+		Description: "List all available commands",
+		Callback: Help,
+	},
+}
+
+func (l Cmds) Run(cmd Cmd) error {
+	c, found := l[cmd.Name]	
+	if !found {
+		return fmt.Errorf("did not find cmd: %v\n", cmd.Name)
 	}
+
+	return c.Callback()
 }

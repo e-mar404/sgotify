@@ -4,7 +4,7 @@ import (
 	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/e-mar404/sgotify/internal/tui/constants"
+	constants "github.com/e-mar404/sgotify/internal/const"
 )
 
 func Run() error {

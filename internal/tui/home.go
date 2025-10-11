@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/e-mar404/sgotify/internal/tui/constants"
+	constants "github.com/e-mar404/sgotify/internal/const"
 )
 
 type HomeUI struct {
@@ -51,7 +51,7 @@ func (h HomeUI) View() string {
 	content := constants.WindowStyle.
 		Height(constants.WindowSize.Height - borderOffset - helpOffset). 
 		Width(constants.WindowSize.Width - borderOffset). 
-		Render("login page\nyou're not logged in")
+		Render("TUI coming soon...")
 
 	return content + "\n" + helpView
 }
