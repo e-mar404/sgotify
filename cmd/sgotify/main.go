@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	command.InitCmds()
+
 	args := os.Args[1:]
 
 	if len(args) == 0 {

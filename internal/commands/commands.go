@@ -1,6 +1,8 @@
 package command
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Cmd struct {
 	 Name string
@@ -11,19 +13,25 @@ type Cmd struct {
 
 type Cmds map[string]Cmd
 
-var List = Cmds {
-	"help": {
-		Name: "help",
-		Description: "List all available commands",
-		Callback: Help,
-	},
-}
+var List = Cmds{}
 
-func (l Cmds) Run(cmd Cmd) error {
-	c, found := l[cmd.Name]	
+func (cmds Cmds) Run(cmd Cmd) error {
+	c, found := cmds[cmd.Name]	
 	if !found {
 		return fmt.Errorf("did not find cmd: %v\n", cmd.Name)
 	}
 
 	return c.Callback()
+}
+
+func (cmds Cmds) Register(cmd Cmd) {
+	cmds[cmd.Name] = cmd
+}
+
+func InitCmds() {
+	List.Register(Cmd {
+		Name: "help",
+		Description: "Will print out the help menu",
+		Callback: Help,
+	})
 }

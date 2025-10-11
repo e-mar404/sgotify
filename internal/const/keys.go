@@ -1,26 +1,13 @@
 package constants
 
-import (
-	"github.com/charmbracelet/bubbles/key"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-)
-
-var (
-	P *tea.Program
-	WindowSize tea.WindowSizeMsg
-)
+import "github.com/charmbracelet/bubbles/key"
 
 const (
-	KeyringService = "sgotify-auth"	
+	KeyringService = "sgotify-auth"
 )
 
-var WindowStyle = lipgloss.NewStyle(). 
-	Align(lipgloss.Center, lipgloss.Center).
-	Border(lipgloss.RoundedBorder())
-
 type keymap struct {
-	Quit   key.Binding
+	Quit key.Binding
 	Help key.Binding
 }
 
