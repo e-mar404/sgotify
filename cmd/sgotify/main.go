@@ -9,19 +9,15 @@ import (
 )
 
 func main() {
-	command.InitCmds()
-
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		// if there are no arguments then run the tui 
 		if err := tui.Run(); err != nil {
 			fmt.Printf("error running tui: %v\n", err)
 		}
 		return
 	}
 
-	// if an argument is passed run that argument
 	cmd := command.Cmd {
 		Name: args[0],
 		Args: args[1:],

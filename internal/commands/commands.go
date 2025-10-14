@@ -4,6 +4,19 @@ import (
 	"fmt"
 )
 
+func init() {
+	List.Register(Cmd {
+		Name: "help",
+		Description: "Will print out the help menu",
+		Callback: Help,
+	}, 
+	Cmd {
+		Name: "login",
+		Description: "Sign in with client id & secret to get auth & refresh tokens",
+		Callback: Login,
+	})
+}
+
 type Cmd struct {
 	 Name string
 	 Description string
@@ -24,14 +37,8 @@ func (cmds Cmds) Run(cmd Cmd) error {
 	return c.Callback()
 }
 
-func (cmds Cmds) Register(cmd Cmd) {
-	cmds[cmd.Name] = cmd
-}
-
-func InitCmds() {
-	List.Register(Cmd {
-		Name: "help",
-		Description: "Will print out the help menu",
-		Callback: Help,
-	})
+func (cmds Cmds) Register(cmdList ... Cmd) {
+	for _, cmd := range cmdList {
+		cmds[cmd.Name] = cmd
+	}
 }
