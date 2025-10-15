@@ -2,6 +2,8 @@ package command
 
 import (
 	"fmt"
+
+	constants "github.com/e-mar404/sgotify/internal/const"
 )
 
 func init() {
@@ -21,20 +23,20 @@ type Cmd struct {
 	 Name string
 	 Description string
 	 Args []string
-	 Callback func() error
+	 Callback func(*constants.State) error
 }
 
 type Cmds map[string]Cmd
 
 var List = Cmds{}
 
-func (cmds Cmds) Run(cmd Cmd) error {
+func (cmds Cmds) Run(state *constants.State, cmd Cmd) error {
 	c, found := cmds[cmd.Name]	
 	if !found {
 		return fmt.Errorf("did not find cmd: %v\n", cmd.Name)
 	}
 
-	return c.Callback()
+	return c.Callback(state)
 }
 
 func (cmds Cmds) Register(cmdList ... Cmd) {

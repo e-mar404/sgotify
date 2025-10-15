@@ -9,7 +9,7 @@ import (
 	constants "github.com/e-mar404/sgotify/internal/const"
 )
 
-func Help() error {
+func Help(_ *constants.State) error {
 	var output string
 	title := `                               $$\     $$\  $$$$$$\            
                                $$ |    \__|$$  __$$\           
