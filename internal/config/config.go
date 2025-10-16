@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/charmbracelet/log"
 )
 
 const (
@@ -42,6 +44,8 @@ func Load() (*File, error) {
 }
 
 func (cfg *File) Save() error {
+	log.Info("Saving conf file", "cfg", cfg)
+
 	jsonConf, err := json.Marshal(&cfg)
 	if err != nil {
 		return err
