@@ -61,7 +61,7 @@ func initConfig() {
 	
 	viper.SetDefault("client_id", "")
 	viper.SetDefault("client_secret", "")
-	viper.SetDefault("auth_token", "")
+	viper.SetDefault("access_token", "")
 	viper.SetDefault("refresh_token", "")
 	viper.SetDefault("last_refresh", 0)
 	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")

@@ -24,8 +24,10 @@ This is the order that the very first commands should be written in:
     - this is first just because it will be the rootCmd for cobra
     - for now just do a charm model that will display a "coming soon" msg
 
-- [ ] sgotify help
+- [~] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
+    - this one is kind of done. It gets automatically done with cobra but it is
+      not pretty
 
 - [ ] sgotify login
     - use formated form with bubble tea to get client id & secret

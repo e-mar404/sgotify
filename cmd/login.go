@@ -6,16 +6,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-type authRes struct {
-	code string
-	state string
-}
 
 // TODO: pretty print questions with lipgloss later
 var loginCmd = &cobra.Command {
@@ -50,13 +48,13 @@ var loginCmd = &cobra.Command {
 			viper.Set("client_secret", cs)
 			if err := viper.WriteConfig(); err != nil {
 				log.Error("could not save to configuration", "error", err)
-				cobra.CheckErr(err)
+				return err
 			}
 
 			log.Debug("client id and secret saved to config", "ClientID", cid, "ClientSecret", cs)
 		}
 
-		resChan := make(chan authRes)
+		resChan := make(chan api.CodeResponse)
 		go func() {
 			startHTTPServer(resChan)
 		}()
@@ -65,11 +63,19 @@ var loginCmd = &cobra.Command {
 
 		log.Debug("response from spotify auth", "res", authRes) 
 		
-		// call api.LoginWithCode(code, state) and return creds
-		// creds {
-		// 	auth_token
-		// 	refresh_token
-		// }
+		creds, err := api.LoginWithCode(authRes)
+		if err != nil {
+			log.Error("could not retrieve auth & refresh tokens", "error", err)
+			return err
+		}
+		viper.Set("access_token", creds.AccessToken)
+		viper.Set("refresh_token", creds.RefreshToken)
+		viper.Set("last_refresh", time.Now().Unix())
+
+		if err := viper.WriteConfig(); err != nil {
+			log.Error("could not save to configuration", "error", err)
+			return err
+		}
 
 		return nil
 	},
@@ -81,7 +87,7 @@ func prompt(q string, a *string) {
 	fmt.Scan(a)
 }
 
-func startHTTPServer(resChan chan authRes) {
+func startHTTPServer(resChan chan api.CodeResponse) {
 	redirectHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		clientID := viper.GetString("client_id")
 		redirecURI := viper.GetString("redirect_uri")
@@ -111,9 +117,9 @@ func startHTTPServer(resChan chan authRes) {
 			log.Fatal("either code or state is malformed", "code", c, "state", s)
 		}
 		
-		res := authRes {
-			code: c,
-			state: s,
+		res := api.CodeResponse {
+			Code: c,
+			State: s,
 		}
 
 		resChan <- res 
@@ -126,67 +132,9 @@ func startHTTPServer(resChan chan authRes) {
 
 	serverUrl := "127.0.0.1:8080"
 	log.Info("Starting server", "url", serverUrl)
+	fmt.Printf("Starting server on http://%s\n", serverUrl)
 	if err := http.ListenAndServe(serverUrl, nil); err != nil {
 		log.Fatal("something went wrong with the http server", "error", err)
 	}
 }
 
-// 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-// 			q := url.Values{}
-// 			q.Add("code", c)	
-// 			q.Add("redirect_uri", config.RedirectURI) 
-// 			q.Add("grant_type", "authorization_code")
-//
-// 			url := config.TokenURL + "?" + q.Encode()
-//
-// 			client := &http.Client{}
-// 			data := state.Cfg.ClientID + ":" + state.Cfg.ClientSecret
-// 			encodedData := base64.StdEncoding.EncodeToString([]byte(data))
-// 			authKey := "Basic " + encodedData
-//
-// 			req, err := http.NewRequest("POST", url, nil)
-// 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-// 			req.Header.Add("Authorization", authKey)		
-//
-// 			res, err := client.Do(req)
-// 			if err != nil {
-// 				w.Write([]byte("could not properly get auth token"))
-// 			}
-//
-// 			defer res.Body.Close()
-//
-// 			resStruct := struct {
-// 				AccessToken string `json:"access_token"`
-// 				RefreshToken string `json:"refresh_token"`
-// 				Scope string `json:"scope"`
-// 			}{}
-//
-// 			body, _ := io.ReadAll(res.Body)
-// 			json.Unmarshal(body, &resStruct)
-//
-// 			log.Info("auth token req received", "resStruct", resStruct)
-//
-// 			state.Cfg.AuthToken = resStruct.AccessToken
-// 			state.Cfg.RefreshToken = resStruct.RefreshToken
-//
-// 			if err := state.Cfg.Save(); err != nil {
-// 				log.Error("could not save updated cfg", "error", err)
-// 			}
-// 		}
-//
-// 		r.Close = true
-// 	})
-//
-// 	url := "http://127.0.0.1:8080/"
-// 	log.Info("Starting auth server", "port", ":8080")
-// 	cmd := exec.Command("xdg-open", url)
-// 	err := cmd.Run()
-// 	log.Info("if website does not open automatically you can go to " + url + " on your browser", "error", err)
-//
-// 	if err := http.ListenAndServe(":8080", mux); err != nil {
-// 		log.Error("Problem starting auth server", "error", err)
-// 	}
-//
-// 	return nil
-// }
-//
