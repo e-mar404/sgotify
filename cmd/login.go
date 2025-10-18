@@ -101,7 +101,7 @@ func startHTTPServer(resChan chan api.CodeResponse) {
 		q.Add("redirect_uri", redirecURI) 
 		q.Add("state", stateCode)
 
-		spotifyURL := viper.GetString("spotify_api_url")
+		spotifyURL := viper.GetString("spotify_account_url")
 		url := spotifyURL + "/authorize?" + q.Encode()
 
 		log.Info("redirecting to spotify auth page", "redirect url", url)

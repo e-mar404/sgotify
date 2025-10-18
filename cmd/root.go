@@ -65,7 +65,8 @@ func initConfig() {
 	viper.SetDefault("refresh_token", "")
 	viper.SetDefault("last_refresh", 0)
 	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
-	viper.SetDefault("spotify_api_url", "https://accounts.spotify.com")
+	viper.SetDefault("spotify_account_url", "https://accounts.spotify.com")
+	viper.SetDefault("spotify_api_url", "https://api.spotify.com/v1")
 
 	home, err := os.UserHomeDir()
 	if err != nil {

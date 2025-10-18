@@ -27,7 +27,7 @@ func LoginWithCode(authRes CodeResponse) (LoginResponse, error) {
 	q.Add("redirect_uri", viper.GetString("redirect_uri")) 
 	q.Add("grant_type", "authorization_code")
 
-	url := viper.GetString("spotify_api_url") + "/api/token?" + q.Encode()
+	url := viper.GetString("spotify_account_url") + "/api/token?" + q.Encode()
 
 	client := &http.Client{}
 	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
