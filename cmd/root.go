@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/internal/tui"
@@ -28,9 +29,12 @@ var (
 )
 
 func init() {
-	cobra.OnInitialize(initRoot)
+	cobra.OnInitialize(initConfig)
+
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "will show all logs except debug")
 	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "will show all logs")
+
+	rootCmd.AddCommand(loginCmd)
 }
 
 func Execute() {
@@ -40,7 +44,9 @@ func Execute() {
 	}
 }
 
-func initRoot() {
+func initConfig() {
+	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
+
 	switch {
 		case Verbose:
 			// will show all logs except debug
@@ -53,19 +59,27 @@ func initRoot() {
 			log.SetLevel(log.Level(13))
 	}
 	
+	viper.SetDefault("client_id", "")
+	viper.SetDefault("client_secret", "")
+	viper.SetDefault("auth_token", "")
+	viper.SetDefault("refresh_token", "")
+	viper.SetDefault("last_refresh", 0)
+	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
+	viper.SetDefault("spotify_api_url", "https://accounts.spotify.com")
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Error("could not get home dir", "error", err)
 		cobra.CheckErr(err)
 	}
-
-	viper.AddConfigPath(home)
-	viper.SetConfigType("json")
-	viper.SetConfigName(".sgotify.json")
+	defaultPath := filepath.Join(home, ".sgotify.json")
+	viper.SetConfigFile(defaultPath)
 	
 	if err := viper.ReadInConfig(); err != nil {
 		log.Error("could not read config file", "error", err)
-		cobra.CheckErr(err)
+		log.Info("creating new config file with default values")
+		viper.SafeWriteConfigAs(defaultPath)
+		viper.SetConfigFile(defaultPath)
 	}
 
 	log.Info("config file loaded", "path", viper.ConfigFileUsed())
