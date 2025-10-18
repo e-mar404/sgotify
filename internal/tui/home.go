@@ -1,12 +1,12 @@
 package tui
 
 import (
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/log"
 	constants "github.com/e-mar404/sgotify/internal/const"
 )
 
@@ -57,7 +57,7 @@ func (h HomeUI) View() string {
 }
 
 func newHomeUI() HomeUI {
-	log.Println("Starting new home ui")
+	log.Debug("new home ui created")
 	return HomeUI{
 		help: help.New(),
 	}

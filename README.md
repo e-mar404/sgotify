@@ -4,23 +4,27 @@
 
 ## Using charm
 
-how can i utilize the capabilities of charm in a better way?
-
-I could try to make every command just pass directly to the charm main model and
-then that will create any additional views and execute the proper code for what 
-needs to be done??
-
-This would require me write the command struct conform to the msg interface but 
-that shouldnt be hard just have to look at docs, that way it makes the actuall
-callback of what i want to execute (in the case of me wanting to start a server
-or something) easy and still keep each model view to display what I want to see
-instead of the command executing?
+I have been thinking of the purpose of the tui in an entirely wrong way. I
+should make the tui an extension of the cli. There needs to be a well defined
+"api" and then the tui will just be the graphical way of doing it. I should not
+be passing commands from the cli to the tui but instead passing keyboard input
+to the cli and displaying the output. (by passing things to the cli i mean
+passing the same data that would be used on the cli to the same api calls that
+the cli uses.
 
 ### Commands to write
 
-This is the order that they should be written in too
+Now that I am using cobra and viper it should be a lot easier to write the
+commands needed for the cli
 
-- [x] sgotify help
+This is the order that the very first commands should be written in:
+
+- [ ] sgotify
+    - will start the tui
+    - this is first just because it will be the rootCmd for cobra
+    - for now just do a charm model that will display a "coming soon" msg
+
+- [ ] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
 
 - [ ] sgotify login
@@ -34,7 +38,3 @@ This is the order that they should be written in too
 
 - [ ] sgotify profile
     - show some stats similar to neofetch
-
-- [ ] sgotify start
-    - will start rpc server and then this will connect to the neovim rpc client
-      for the ui, this is the last thing that will be done
