@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/api"
 	"github.com/e-mar404/sgotify/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -87,10 +89,35 @@ func initConfig() {
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {
-	// need to see if there is an access_token saved
-	// if there isnt then prompt to run sgotify login
+	log.Info("checking access token status")
 
-	// if there is an access token saved then check when was the last time it was refreshed
-	// if it is stale then get another access_token with api.RefreshAccessToken()
-	log.Info("checking to see if user is logged in + has a valid access_token")
+	assert := func(condition bool) {
+		if condition {
+			log.Error("not signed in")
+			fmt.Fprintln(os.Stderr, "Please run `sgotify login` first.")
+			os.Exit(1)
+		}
+	}
+
+	accessToken := viper.GetString("access_token")
+	assert(accessToken == "")
+
+	last_refresh := viper.GetInt64("last_refresh")
+	if time.Now().Add(-time.Minute*55).Unix() <= last_refresh {
+		log.Info("Access token is still good, not refreshing")
+		return
+	}
+
+	log.Info("asking for a new access token")
+	creds, err := api.RefreshAccessToken()
+	assert(err != nil)
+
+	viper.Set("access_token", creds.AccessToken)
+	viper.Set("last_refresh", time.Now().Unix())
+	if creds.RefreshToken != "" {
+		viper.Set("refresh_token", creds.RefreshToken)
+	}
+
+	err = viper.WriteConfig()
+	assert(err != nil)
 }

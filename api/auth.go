@@ -29,7 +29,6 @@ func LoginWithCode(authRes CodeResponse) (LoginResponse, error) {
 
 	url := viper.GetString("spotify_account_url") + "/api/token?" + q.Encode()
 
-	client := &http.Client{}
 	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
 	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
 	authKey := "Basic " + encodedData
@@ -38,6 +37,7 @@ func LoginWithCode(authRes CodeResponse) (LoginResponse, error) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Authorization", authKey)		
 
+	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		log.Error("not able to request auth token", "error", err)
@@ -53,5 +53,42 @@ func LoginWithCode(authRes CodeResponse) (LoginResponse, error) {
 	log.Debug("auth token req received", "resStruct", loginRes)
 
 	return loginRes, nil
+}
+
+func RefreshAccessToken() (*LoginResponse, error) {
+	q := url.Values{}
+	q.Add("grant_type", "refresh_token")
+	q.Add("refresh_token", viper.GetString("refresh_token")) 
+	
+	url := viper.GetString("spotify_account_url") + "/api/token?" + q.Encode()
+	
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		log.Error("could not create refresh req", "error", err)
+		return nil, err
+	}
+
+	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
+	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
+	authKey := "Basic " + encodedData
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Authorization", authKey)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Error("could not complete refresh req", "error", err)
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	var refreshRes LoginResponse
+	json.Unmarshal(body, &refreshRes)
+
+	log.Debug("refresh res received", "refreshRes", refreshRes)
+
+	return &refreshRes, nil
 }
 
