@@ -32,16 +32,39 @@ var (
 		Use: "profile",
 		Short: "display some stats about your spotify profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			res, err := api.UserProfile()
+			profile, err := api.UserProfile()
 			if err != nil {
 				log.Error("could not get user profile", "error", err)
 				return err
 			}
-			log.Info("got back a user profile", "profile", res)
+			log.Info("got back a user profile", "profile", profile)
+
+			topArtist, err := api.TopArtist()
+			if err != nil {
+				log.Error("could not get top artist", "error", err)
+				return err
+			}
+			log.Info("got back top artist", "top item", topArtist)
+
+			topTrack, err := api.TopTrack()
+			if err != nil {
+				log.Error("could not get top track", "error", err)
+				return err
+			}
+			log.Info("got back top track", "top item", topTrack)
 			
+			// stats to display
+			// ✓ username (maybe see if the pfp pic can be downloaded and show that instead of the logo)
+			// ✓ follower count 
+			// - playlist count (idk if ill do this one)
+			// ✓ top artist (this month)
+			// ✓ top track (this month)
+
 			stats := strings.Builder{}
-			stats.WriteString(fmt.Sprintf("Display Name: %s\n", res.DisplayName))
-			stats.WriteString(fmt.Sprintf("Email: %s\n", res.Email))
+			stats.WriteString(fmt.Sprintf("Username: %s\n", profile.DisplayName))
+			stats.WriteString(fmt.Sprintf("Followers: %d\n", profile.Followers.Total))
+			stats.WriteString(fmt.Sprintf("Top Artist (this month): %s\n", topArtist.Items[0].Name))
+			stats.WriteString(fmt.Sprintf("Top Track (this month): %s\n", topTrack.Items[0].Name))
 			
 			output := lipgloss.JoinHorizontal(
 				lipgloss.Top,

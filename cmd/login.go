@@ -92,7 +92,7 @@ func startHTTPServer(resChan chan api.CodeResponse) {
 		clientID := viper.GetString("client_id")
 		redirecURI := viper.GetString("redirect_uri")
 		stateCode := rand.Text()
-		scope := "user-read-private user-read-email"
+		scope := "user-top-read user-read-private user-read-email"
 
 		q := url.Values{}
 		q.Add("response_type", "code")
