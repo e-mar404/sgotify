@@ -45,8 +45,8 @@ func Execute() {
 }
 
 func initConfig() {
+	log.SetOutput(os.Stderr)
 	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
-
 	switch {
 		case Verbose:
 			// will show all logs except debug
@@ -84,4 +84,13 @@ func initConfig() {
 	}
 
 	log.Info("config file loaded", "path", viper.ConfigFileUsed())
+}
+
+func requireAuth(cmd *cobra.Command, args []string) {
+	// need to see if there is an access_token saved
+	// if there isnt then prompt to run sgotify login
+
+	// if there is an access token saved then check when was the last time it was refreshed
+	// if it is stale then get another access_token with api.RefreshAccessToken()
+	log.Info("checking to see if user is logged in + has a valid access_token")
 }

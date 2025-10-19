@@ -31,6 +31,7 @@ var (
 	profileCmd  = &cobra.Command {
 		Use: "profile",
 		Short: "display some stats about your spotify profile",
+		PreRun: requireAuth,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profile, err := api.UserProfile()
 			if err != nil {
@@ -53,13 +54,6 @@ var (
 			}
 			log.Info("got back top track", "top item", topTrack)
 			
-			// stats to display
-			// ✓ username (maybe see if the pfp pic can be downloaded and show that instead of the logo)
-			// ✓ follower count 
-			// - playlist count (idk if ill do this one)
-			// ✓ top artist (this month)
-			// ✓ top track (this month)
-
 			stats := strings.Builder{}
 			stats.WriteString(fmt.Sprintf("Username: %s\n", profile.DisplayName))
 			stats.WriteString(fmt.Sprintf("Followers: %d\n", profile.Followers.Total))
