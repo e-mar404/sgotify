@@ -41,7 +41,8 @@ func init() {
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Error("error running sgotify rootCmd", "error", err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
