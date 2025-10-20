@@ -90,6 +90,7 @@ func initConfig() {
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {
+
 	log.Info("checking access token status")
 
 	assert := func(condition bool) {
@@ -110,7 +111,7 @@ func requireAuth(cmd *cobra.Command, args []string) {
 	}
 
 	log.Info("asking for a new access token")
-	creds, err := api.RefreshAccessToken()
+	creds, err := api.NewAuthClient().RefreshAccessToken()
 	assert(err != nil)
 
 	viper.Set("access_token", creds.AccessToken)

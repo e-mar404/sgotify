@@ -1,19 +1,17 @@
 package api
 
 import (
-	"encoding/base64"
-	"encoding/json"
-	"io"
 	"net/http"
-	"net/url"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/spf13/viper"
 )
 
 type AuthClient struct {
-	Headers http.Header
-	Query url.Values
+	HTTP *http.Client
+	Header *http.Header
+	Query map[string]string
 }
 
 type LoginResponse struct {
@@ -27,85 +25,59 @@ type CodeResponse struct {
 }
 
 func NewAuthClient() *AuthClient {
-	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
-	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
-	authKey := "Basic " + encodedData
-
 	return &AuthClient{
-		Headers: http.Header{
+		HTTP: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+		Header: &http.Header{
 			"Content-Type": []string{"application/x-www-form-urlencoded"},
-			"Authorization": []string{authKey},
 		},
 	}
 }
 
+func (ac *AuthClient) do(req *http.Request) (*http.Response, error) {
+	return ac.HTTP.Do(req)
+}
+
+func (ac *AuthClient) authKeySet() bool {
+	return ac.Header.Get("Authorization") == ""
+}
+
+func (ac *AuthClient) addHeader(key, value string) {
+	ac.Header.Add(key, value)
+}
+
+func (ac *AuthClient) header() *http.Header {
+	return ac.Header
+}
 
 func (ac *AuthClient) LoginWithCode(authRes CodeResponse) (*LoginResponse, error) {
-	q := url.Values{
-		"code": []string{authRes.Code},
-		"redirect_uri": []string{viper.GetString("redirect_uri")},
-		"grant_type": []string{"authorization_code"},
+	q := map[string]string{
+		"code": authRes.Code,
+		"redirect_uri": viper.GetString("redirect_uri"),
+		"grant_type": "authorization_code",
 	}
 	url := viper.GetString("spotify_account_url") + "/api/token"
-	loginRes, err := do(ac, "POST", url, q)
+	loginRes, err := do[LoginResponse](ac, "POST", url, q)
 	if err != nil {
 		log.Error("could not login in with code", "error", err)
 		return nil, err
 	}
 
 	return loginRes, nil
-	// client := &http.Client{}
-	// res, err := client.Do(req)
-	// if err != nil {
-	// 	log.Error("not able to request auth token", "error", err)
-	// 	return LoginResponse{}, nil
-	// }
-	//
-	// defer res.Body.Close()
-	//
-	// var loginRes LoginResponse
-	// body, _ := io.ReadAll(res.Body)
-	// json.Unmarshal(body, &loginRes)
-	//
-	// log.Debug("auth token req received", "resStruct", loginRes)
-	//
-	// return loginRes, nil
 }
 
-func RefreshAccessToken() (*LoginResponse, error) {
-	q := url.Values{}
-	q.Add("grant_type", "refresh_token")
-	q.Add("refresh_token", viper.GetString("refresh_token")) 
-	
-	url := viper.GetString("spotify_account_url") + "/api/token?" + q.Encode()
-	
-	req, err := http.NewRequest("POST", url, nil)
+func (ac *AuthClient) RefreshAccessToken() (*LoginResponse, error) {
+	q := map[string]string {
+		"grant_type": "refresh_token",
+		"refresh_token": viper.GetString("refresh_token"),
+	}
+	url := viper.GetString("spotify_account_url") + "/api/token"
+	refreshRes, err := do[LoginResponse](ac, "POST", url, q)
 	if err != nil {
-		log.Error("could not create refresh req", "error", err)
+		log.Error("could not refresh access token", "error", err)
 		return nil, err
 	}
-
-	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
-	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
-	authKey := "Basic " + encodedData
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", authKey)
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		log.Error("could not complete refresh req", "error", err)
-		return nil, err
-	}
-
-	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
-
-	var refreshRes LoginResponse
-	json.Unmarshal(body, &refreshRes)
-
-	log.Debug("refresh res received", "refreshRes", refreshRes)
-
-	return &refreshRes, nil
+	return refreshRes, nil
 }
 
