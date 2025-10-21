@@ -94,7 +94,7 @@ var (
 			clientID := viper.GetString("client_id")
 			redirecURI := viper.GetString("redirect_uri")
 			stateCode := rand.Text()
-			scope := "user-top-read user-read-private user-read-email"
+			scope := "user-read-playback-state user-modify-playback-state user-top-read user-read-private user-read-email"
 
 			q := url.Values{}
 			q.Add("response_type", "code")

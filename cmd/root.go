@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/cmd/list"
 	"github.com/e-mar404/sgotify/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,7 +36,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "will show all logs except debug")
 	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "will show all logs")
 
-	rootCmd.AddCommand(loginCmd)
+	list.RootCmd.PreRun = requireAuth
+	rootCmd.AddCommand(loginCmd, list.RootCmd)
 }
 
 func Execute() {

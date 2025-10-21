@@ -44,11 +44,11 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (*T
 
 	var resStruct T 
 	body, _ := io.ReadAll(res.Body)
+	log.Debug("raw res body", "body", string(body))
 	if err := json.Unmarshal(body, &resStruct); err != nil {
 		log.Error("could not unmarshal response", "error", err)
 		return nil, err
 	}
-	log.Debug("returning raw body", "body", string(body))
 	log.Debug("returning unmashaled res body", "resStruct", resStruct)
 
 	return &resStruct, nil
