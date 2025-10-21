@@ -10,8 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const logo string = 
-`⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣤⣶⣶⣶⣶⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀
+const logo string = `⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣤⣶⣶⣶⣶⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⢀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀
 ⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀
 ⠀⢀⣾⣿⡿⠿⠛⠛⠛⠉⠉⠉⠉⠛⠛⠛⠿⠿⣿⣿⣿⣿⣿⣷⡀⠀
@@ -28,10 +27,10 @@ const logo string =
 var (
 	userClient = api.NewUserClient()
 	statsStyle = lipgloss.NewStyle().Padding(2)
-	logoStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("40"))
-	profileCmd  = &cobra.Command {
-		Use: "profile",
-		Short: "display some stats about your spotify profile",
+	logoStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("40"))
+	profileCmd = &cobra.Command{
+		Use:    "profile",
+		Short:  "display some stats about your spotify profile",
 		PreRun: requireAuth,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profile, err := userClient.UserProfile()
@@ -54,13 +53,13 @@ var (
 				return err
 			}
 			log.Info("got back top track", "top item", topTrack)
-			
+
 			stats := strings.Builder{}
 			stats.WriteString(fmt.Sprintf("Username: %s\n", profile.DisplayName))
 			stats.WriteString(fmt.Sprintf("Followers: %d\n", profile.Followers.Total))
 			stats.WriteString(fmt.Sprintf("Top Artist (this month): %s\n", topArtist.Items[0].Name))
 			stats.WriteString(fmt.Sprintf("Top Track (this month): %s\n", topTrack.Items[0].Name))
-			
+
 			output := lipgloss.JoinHorizontal(
 				lipgloss.Top,
 				logoStyle.Render(logo),
@@ -77,4 +76,3 @@ var (
 func init() {
 	rootCmd.AddCommand(profileCmd)
 }
-

@@ -1,4 +1,5 @@
 package cmd
+
 // package command
 //
 // import (
@@ -12,9 +13,9 @@ package cmd
 //
 // func Help(_ *constants.State) error {
 // 	var output string
-// 	title := `                               $$\     $$\  $$$$$$\            
-//                                $$ |    \__|$$  __$$\           
-//  $$$$$$$\  $$$$$$\   $$$$$$\ $$$$$$\   $$\ $$ /  \__|$$\   $$\ 
+// 	title := `                               $$\     $$\  $$$$$$\
+//                                $$ |    \__|$$  __$$\
+//  $$$$$$$\  $$$$$$\   $$$$$$\ $$$$$$\   $$\ $$ /  \__|$$\   $$\
 // $$  _____|$$  __$$\ $$  __$$\\_$$  _|  $$ |$$$$\     $$ |  $$ |
 // \$$$$$$\  $$ /  $$ |$$ /  $$ | $$ |    $$ |$$  _|    $$ |  $$ |
 //  \____$$\ $$ |  $$ |$$ |  $$ | $$ |$$\ $$ |$$ |      $$ |  $$ |
@@ -25,7 +26,7 @@ package cmd
 //            \______/                                   \______/`
 //
 //
-// 	title = constants.SecondaryTextCLI. 
+// 	title = constants.SecondaryTextCLI.
 // 		Border(lipgloss.ASCIIBorder()).
 // 		BorderForeground(constants.Purple).
 // 		Render(title)
@@ -43,13 +44,13 @@ package cmd
 // 		i++
 // 	}
 //
-// 	constants.HelpTableCLI. 
-// 		Headers("command", "description"). 
+// 	constants.HelpTableCLI.
+// 		Headers("command", "description").
 // 		Rows(content...)
 //
 // 	output += constants.HelpTableCLI.Render()
 //
-// 	width, _, _ := term.GetSize(os.Stdout.Fd()) 
+// 	width, _, _ := term.GetSize(os.Stdout.Fd())
 // 	output = lipgloss.PlaceHorizontal(width, lipgloss.Center, output)
 //
 // 	fmt.Println(output)

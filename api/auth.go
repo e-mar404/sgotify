@@ -10,18 +10,18 @@ import (
 )
 
 type AuthClient struct {
-	HTTP *http.Client
+	HTTP   *http.Client
 	Header *http.Header
-	Query map[string]string
+	Query  map[string]string
 }
 
 type LoginResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 
 type CodeResponse struct {
-	Code string
+	Code  string
 	State string
 }
 
@@ -38,7 +38,7 @@ func (ac *AuthClient) do(req *http.Request) (*http.Response, error) {
 }
 
 func (ac *AuthClient) prep(req *http.Request) {
-	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
+	data := viper.GetString("client_id") + ":" + viper.GetString("client_secret")
 	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
 	authKey := "Basic " + encodedData
 
@@ -48,9 +48,9 @@ func (ac *AuthClient) prep(req *http.Request) {
 
 func (ac *AuthClient) LoginWithCode(authRes CodeResponse) (*LoginResponse, error) {
 	q := map[string]string{
-		"code": authRes.Code,
+		"code":         authRes.Code,
 		"redirect_uri": viper.GetString("redirect_uri"),
-		"grant_type": "authorization_code",
+		"grant_type":   "authorization_code",
 	}
 	url := viper.GetString("spotify_account_url") + "/api/token"
 	loginRes, err := do[LoginResponse](ac, "POST", url, q)
@@ -63,8 +63,8 @@ func (ac *AuthClient) LoginWithCode(authRes CodeResponse) (*LoginResponse, error
 }
 
 func (ac *AuthClient) RefreshAccessToken() (*LoginResponse, error) {
-	q := map[string]string {
-		"grant_type": "refresh_token",
+	q := map[string]string{
+		"grant_type":    "refresh_token",
 		"refresh_token": viper.GetString("refresh_token"),
 	}
 	url := viper.GetString("spotify_account_url") + "/api/token"
@@ -75,4 +75,3 @@ func (ac *AuthClient) RefreshAccessToken() (*LoginResponse, error) {
 	}
 	return refreshRes, nil
 }
-

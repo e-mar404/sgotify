@@ -10,8 +10,8 @@ import (
 
 var (
 	devicesClient = api.NewDevicesClient()
-	devicesCmd = &cobra.Command{
-		Use: "devices",
+	devicesCmd    = &cobra.Command{
+		Use:   "devices",
 		Short: "list available spotify devices",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Debug("listing available devices")
@@ -21,7 +21,7 @@ var (
 				log.Error("device list api error", "error", err)
 				return err
 			}
-	
+
 			fmt.Printf("Available devices:\n\n")
 			for _, device := range deviceList.Devcies {
 				fmt.Printf("ID: %s\n", device.ID)
@@ -30,7 +30,6 @@ var (
 			}
 
 			return nil
-		},	
+		},
 	}
 )
-

@@ -8,7 +8,7 @@ import (
 
 var (
 	RootCmd = &cobra.Command{
-		Use: "list",
+		Use:   "list",
 		Short: "list various objects from spotify",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("listing things")
@@ -19,5 +19,3 @@ var (
 func init() {
 	RootCmd.AddCommand(devicesCmd)
 }
-
-

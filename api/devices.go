@@ -9,10 +9,10 @@ import (
 )
 
 type DeviceItem struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Volume int `json:"volume_percent"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Volume int    `json:"volume_percent"`
 }
 
 type DeviceList struct {
@@ -20,12 +20,12 @@ type DeviceList struct {
 }
 
 type DevicesClient struct {
-	HTTP   *http.Client
-	Query  map[string]string
+	HTTP  *http.Client
+	Query map[string]string
 }
 
 func (dc *DevicesClient) prep(req *http.Request) {
-	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
+	req.Header.Add("Authorization", "Bearer "+viper.GetString("access_token"))
 }
 
 func (dc *DevicesClient) do(req *http.Request) (*http.Response, error) {
@@ -45,10 +45,8 @@ func (dc *DevicesClient) AvailableDevices() (*DeviceList, error) {
 	var devicesRes *DeviceList
 	devicesRes, err := do[DeviceList](dc, "GET", url, nil)
 	if err != nil {
-		log.Error("could not complete available device list", "error", err )
+		log.Error("could not complete available device list", "error", err)
 		return nil, err
 	}
 	return devicesRes, nil
 }
-
-

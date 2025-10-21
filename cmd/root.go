@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	Verbose bool 
-	Debug bool
+	Verbose bool
+	Debug   bool
 
 	rootCmd = &cobra.Command{
-		Use: "sgotify",
+		Use:   "sgotify",
 		Short: "Spotify for the cli/tui",
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Info("starting tui")
@@ -52,17 +52,17 @@ func initConfig() {
 	log.SetOutput(os.Stderr)
 	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
 	switch {
-		case Verbose:
-			// will show all logs except debug
-			log.SetLevel(log.Level(0))
-		case Debug:
-			// debug level is -4
-			log.SetLevel(log.Level(-5))
-		default:
-			// highest level is 12, so this will hide all logs
-			log.SetLevel(log.Level(13))
+	case Verbose:
+		// will show all logs except debug
+		log.SetLevel(log.Level(0))
+	case Debug:
+		// debug level is -4
+		log.SetLevel(log.Level(-5))
+	default:
+		// highest level is 12, so this will hide all logs
+		log.SetLevel(log.Level(13))
 	}
-	
+
 	viper.SetDefault("client_id", "")
 	viper.SetDefault("client_secret", "")
 	viper.SetDefault("access_token", "")
@@ -79,7 +79,7 @@ func initConfig() {
 	}
 	defaultPath := filepath.Join(home, ".sgotify.json")
 	viper.SetConfigFile(defaultPath)
-	
+
 	if err := viper.ReadInConfig(); err != nil {
 		log.Error("could not read config file", "error", err)
 		log.Info("creating new config file with default values")

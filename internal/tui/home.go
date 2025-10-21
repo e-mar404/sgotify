@@ -12,7 +12,7 @@ import (
 
 type HomeUI struct {
 	loaded bool
-	help help.Model
+	help   help.Model
 }
 
 func (h HomeUI) Init() tea.Cmd {
@@ -46,11 +46,11 @@ func (h HomeUI) View() string {
 	helpView := h.help.View(constants.Keymap)
 
 	// +1 accounts for the newline between content and helpView
-	helpOffset := strings.Count(helpView, "\n") + 1 
+	helpOffset := strings.Count(helpView, "\n") + 1
 
 	content := constants.WindowStyle.
-		Height(constants.WindowSize.Height - borderOffset - helpOffset). 
-		Width(constants.WindowSize.Width - borderOffset). 
+		Height(constants.WindowSize.Height - borderOffset - helpOffset).
+		Width(constants.WindowSize.Width - borderOffset).
 		Render("TUI coming soon...")
 
 	return content + "\n" + helpView

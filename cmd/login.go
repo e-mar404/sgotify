@@ -14,18 +14,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-
 // TODO: pretty print questions with lipgloss later
 var (
 	authClient = api.NewAuthClient()
-	loginCmd = &cobra.Command {
-		Use: "login", 
+	loginCmd   = &cobra.Command{
+		Use: "login",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var cid, cs string
-			cid = viper.GetString("client_id")	
+			cid = viper.GetString("client_id")
 			cs = viper.GetString("client_secret")
 
-			askForClientCreds := true 
+			askForClientCreds := true
 			if cid != "" && cs != "" {
 				log.Debug("using saved creds", "client_id", cid, "client_secret", cs)
 
@@ -34,7 +33,7 @@ var (
 
 				switch strings.ToLower(response) {
 				case "y":
-					askForClientCreds = false 
+					askForClientCreds = false
 				case "n":
 					askForClientCreds = true
 				default:
@@ -61,9 +60,9 @@ var (
 				startHTTPServer(resChan)
 			}()
 
-			authRes := <- resChan
+			authRes := <-resChan
 
-			log.Debug("response from spotify auth", "res", authRes) 
+			log.Debug("response from spotify auth", "res", authRes)
 
 			creds, err := authClient.LoginWithCode(authRes)
 			if err != nil {
@@ -81,62 +80,62 @@ var (
 
 			return nil
 		},
+	}
+)
+
+func prompt(q string, a *string) {
+	// could use bufio.NewReader(os.Stdin) here but i think it should be fine with fmt.Scan since it is only asking for values that will be a copy paste from the spotify dashboard
+	fmt.Printf("%s\n> ", q)
+	fmt.Scan(a)
+}
+
+func startHTTPServer(resChan chan api.CodeResponse) {
+	redirectHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		clientID := viper.GetString("client_id")
+		redirecURI := viper.GetString("redirect_uri")
+		stateCode := rand.Text()
+		scope := "user-read-playback-state user-modify-playback-state user-top-read user-read-private user-read-email"
+
+		q := url.Values{}
+		q.Add("response_type", "code")
+		q.Add("client_id", clientID)
+		q.Add("scope", scope)
+		q.Add("redirect_uri", redirecURI)
+		q.Add("state", stateCode)
+
+		spotifyURL := viper.GetString("spotify_account_url")
+		url := spotifyURL + "/authorize?" + q.Encode()
+
+		log.Info("redirecting to spotify auth page", "redirect url", url)
+
+		http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	})
 
-	func prompt(q string, a *string) {
-		// could use bufio.NewReader(os.Stdin) here but i think it should be fine with fmt.Scan since it is only asking for values that will be a copy paste from the spotify dashboard
-		fmt.Printf("%s\n> ", q)
-		fmt.Scan(a)
-	}
+	callbackHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := r.URL.Query().Get("code")
+		s := r.URL.Query().Get("state")
 
-	func startHTTPServer(resChan chan api.CodeResponse) {
-		redirectHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			clientID := viper.GetString("client_id")
-			redirecURI := viper.GetString("redirect_uri")
-			stateCode := rand.Text()
-			scope := "user-read-playback-state user-modify-playback-state user-top-read user-read-private user-read-email"
-
-			q := url.Values{}
-			q.Add("response_type", "code")
-			q.Add("client_id", clientID)
-			q.Add("scope", scope)
-			q.Add("redirect_uri", redirecURI) 
-			q.Add("state", stateCode)
-
-			spotifyURL := viper.GetString("spotify_account_url")
-			url := spotifyURL + "/authorize?" + q.Encode()
-
-			log.Info("redirecting to spotify auth page", "redirect url", url)
-
-			http.Redirect(w, r, url, http.StatusPermanentRedirect)
-		})
-
-		callbackHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			c := r.URL.Query().Get("code")
-			s := r.URL.Query().Get("state")
-
-			if c == "" || s == "" {
-				log.Fatal("either code or state is malformed", "code", c, "state", s)
-			}
-
-			res := api.CodeResponse {
-				Code: c,
-				State: s,
-			}
-
-			resChan <- res 
-
-			w.Write([]byte("You can close the tab now"))
-		})
-
-		http.Handle("/", redirectHandler)
-		http.Handle("/callback", callbackHandler)
-
-		serverUrl := "127.0.0.1:8080"
-		log.Info("Starting server", "url", serverUrl)
-		fmt.Printf("Starting server on http://%s\n", serverUrl)
-		if err := http.ListenAndServe(serverUrl, nil); err != nil {
-			log.Fatal("something went wrong with the http server", "error", err)
+		if c == "" || s == "" {
+			log.Fatal("either code or state is malformed", "code", c, "state", s)
 		}
-	}
 
+		res := api.CodeResponse{
+			Code:  c,
+			State: s,
+		}
+
+		resChan <- res
+
+		w.Write([]byte("You can close the tab now"))
+	})
+
+	http.Handle("/", redirectHandler)
+	http.Handle("/callback", callbackHandler)
+
+	serverUrl := "127.0.0.1:8080"
+	log.Info("Starting server", "url", serverUrl)
+	fmt.Printf("Starting server on http://%s\n", serverUrl)
+	if err := http.ListenAndServe(serverUrl, nil); err != nil {
+		log.Fatal("something went wrong with the http server", "error", err)
+	}
+}

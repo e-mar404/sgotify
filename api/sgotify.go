@@ -20,7 +20,7 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (*T
 	for key, value := range q {
 		query.Add(key, value)
 	}
-	 
+
 	fullUrl := urlPath + "?" + query.Encode()
 	log.Debug("created full url", "fullUrl", fullUrl)
 
@@ -40,9 +40,9 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (*T
 
 	// TODO: check status code here
 
-	defer res.Body.Close()	
+	defer res.Body.Close()
 
-	var resStruct T 
+	var resStruct T
 	body, _ := io.ReadAll(res.Body)
 	log.Debug("raw res body", "body", string(body))
 	if err := json.Unmarshal(body, &resStruct); err != nil {

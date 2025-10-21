@@ -21,12 +21,12 @@ type ProfileResponse struct {
 }
 
 type UserClient struct {
-	HTTP   *http.Client
-	Query  map[string]string
+	HTTP  *http.Client
+	Query map[string]string
 }
 
 func (u *UserClient) prep(req *http.Request) {
-	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
+	req.Header.Add("Authorization", "Bearer "+viper.GetString("access_token"))
 }
 
 func (u *UserClient) do(req *http.Request) (*http.Response, error) {
@@ -50,10 +50,10 @@ func (uc *UserClient) UserProfile() (*ProfileResponse, error) {
 }
 
 func (uc *UserClient) TopArtist() (*TopItemsResponse, error) {
-	q := map[string]string {
+	q := map[string]string{
 		"time_range": "short_term",
-		"limit": "1",
-		"offset": "0",
+		"limit":      "1",
+		"offset":     "0",
 	}
 	apiUrl := viper.GetString("spotify_api_url") + "/me/top/artists"
 	topArtistRes, err := do[TopItemsResponse](uc, "GET", apiUrl, q)
@@ -67,10 +67,10 @@ func (uc *UserClient) TopArtist() (*TopItemsResponse, error) {
 func (uc *UserClient) TopTrack() (*TopItemsResponse, error) {
 	q := map[string]string{
 		"time_range": "short_term",
-		"limit": "1",
-		"offset": "0",
+		"limit":      "1",
+		"offset":     "0",
 	}
-	apiUrl := viper.GetString("spotify_api_url") + "/me/top/tracks" 
+	apiUrl := viper.GetString("spotify_api_url") + "/me/top/tracks"
 	topTrackRes, err := do[TopItemsResponse](uc, "GET", apiUrl, q)
 	if err != nil {
 		log.Error("could not complete top track request", "error", err)
