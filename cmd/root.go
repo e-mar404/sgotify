@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
-	"github.com/e-mar404/sgotify/api"
 	"github.com/e-mar404/sgotify/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -111,7 +110,7 @@ func requireAuth(cmd *cobra.Command, args []string) {
 	}
 
 	log.Info("asking for a new access token")
-	creds, err := api.NewAuthClient().RefreshAccessToken()
+	creds, err := authClient.RefreshAccessToken()
 	assert(err != nil)
 
 	viper.Set("access_token", creds.AccessToken)

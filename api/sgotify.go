@@ -1,20 +1,16 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/charmbracelet/log"
-	"github.com/spf13/viper"
 )
 
 type Client interface {
-	authKeySet() bool
-	header() *http.Header
-	addHeader(string, string)
+	prep(*http.Request)
 	do(*http.Request) (*http.Response, error)
 }
 
@@ -33,13 +29,7 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (*T
 		log.Error("could not create request", "method", method, "fullUrl", fullUrl)
 		return nil, err
 	}
-
-	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
-	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
-	authKey := "Basic " + encodedData
-	c.addHeader("Authorization", authKey)
-
-	req.Header = *c.header()
+	c.prep(req)
 
 	res, err := c.do(req)
 	if err != nil {

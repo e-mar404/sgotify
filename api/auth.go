@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"net/http"
 	"time"
 
@@ -29,9 +30,6 @@ func NewAuthClient() *AuthClient {
 		HTTP: &http.Client{
 			Timeout: 10 * time.Second,
 		},
-		Header: &http.Header{
-			"Content-Type": []string{"application/x-www-form-urlencoded"},
-		},
 	}
 }
 
@@ -39,16 +37,13 @@ func (ac *AuthClient) do(req *http.Request) (*http.Response, error) {
 	return ac.HTTP.Do(req)
 }
 
-func (ac *AuthClient) authKeySet() bool {
-	return ac.Header.Get("Authorization") == ""
-}
+func (ac *AuthClient) prep(req *http.Request) {
+	data := viper.GetString("client_id" )+ ":" + viper.GetString("client_secret") 
+	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
+	authKey := "Basic " + encodedData
 
-func (ac *AuthClient) addHeader(key, value string) {
-	ac.Header.Add(key, value)
-}
-
-func (ac *AuthClient) header() *http.Header {
-	return ac.Header
+	req.Header.Add("Authorization", authKey)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 }
 
 func (ac *AuthClient) LoginWithCode(authRes CodeResponse) (*LoginResponse, error) {

@@ -26,6 +26,7 @@ const logo string =
 ⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠛⠿⠿⠿⠿⠛⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀`
 
 var (
+	userClient = api.NewUserClient()
 	statsStyle = lipgloss.NewStyle().Padding(2)
 	logoStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("40"))
 	profileCmd  = &cobra.Command {
@@ -33,21 +34,21 @@ var (
 		Short: "display some stats about your spotify profile",
 		PreRun: requireAuth,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			profile, err := api.UserProfile()
+			profile, err := userClient.UserProfile()
 			if err != nil {
 				log.Error("could not get user profile", "error", err)
 				return err
 			}
 			log.Info("got back a user profile", "profile", profile)
 
-			topArtist, err := api.TopArtist()
+			topArtist, err := userClient.TopArtist()
 			if err != nil {
 				log.Error("could not get top artist", "error", err)
 				return err
 			}
 			log.Info("got back top artist", "top item", topArtist)
 
-			topTrack, err := api.TopTrack()
+			topTrack, err := userClient.TopTrack()
 			if err != nil {
 				log.Error("could not get top track", "error", err)
 				return err

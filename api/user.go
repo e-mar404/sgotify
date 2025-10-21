@@ -1,142 +1,80 @@
 package api
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/charmbracelet/log"
 	"github.com/spf13/viper"
 )
 
-// TODO: still needs an api call for this
 type TopItemsResponse struct {
 	Items []struct {
-		Name string `json:"name"`	
+		Name string `json:"name"`
 	} `json:"items"`
 }
 
 type ProfileResponse struct {
 	DisplayName string `json:"display_name"`
-	Followers struct {
+	Followers   struct {
 		Total int `json:"total"`
 	} `json:"followers"`
 }
 
-func UserProfile() (*ProfileResponse, error) {
-	client := &http.Client{}
+type UserClient struct {
+	HTTP   *http.Client
+	Query  map[string]string
+}
+
+func (u *UserClient) prep(req *http.Request) {
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
+}
+
+func (u *UserClient) do(req *http.Request) (*http.Response, error) {
+	return u.HTTP.Do(req)
+}
+
+func NewUserClient() *UserClient {
+	return &UserClient{
+		HTTP: &http.Client{},
+	}
+}
+
+func (uc *UserClient) UserProfile() (*ProfileResponse, error) {
 	apiUrl := viper.GetString("spotify_api_url") + "/me"
-
-	log.Debug("creating request", "url", apiUrl)
-	req, err := http.NewRequest("GET", apiUrl, nil)
+	profileRes, err := do[ProfileResponse](uc, "GET", apiUrl, nil)
 	if err != nil {
-		log.Error("could not create request", "error", err)
+		log.Error("could not complete user profile req", "error", err)
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
-	
-	res, err := client.Do(req)
-	if err != nil {
-		log.Error("could not get response", "error", err)
-		return nil, err
-	}
-
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Error("could not read response body", "error", err)
-		return nil, err
-	}
-	log.Debug("profile response body", "content", string(body))
-
-	var profile ProfileResponse
-	if err := json.Unmarshal(body, &profile); err != nil {
-		log.Error("could not unmarshal response", "error", err)
-		return nil, err 
-	}
-	
-	return &profile, nil
+	return profileRes, nil
 }
 
-func TopArtist() (*TopItemsResponse, error) {
-	q := url.Values{}
-
-	q.Add("time_range", "short_term")
-	q.Add("limit", "1")
-	q.Add("offset", "0")
-
-	client := &http.Client{}
-	apiUrl := viper.GetString("spotify_api_url") + "/me/top/artists?" + q.Encode()
-
-	log.Debug("creating request", "url", apiUrl)
-	req, err := http.NewRequest("GET", apiUrl, nil)
+func (uc *UserClient) TopArtist() (*TopItemsResponse, error) {
+	q := map[string]string {
+		"time_range": "short_term",
+		"limit": "1",
+		"offset": "0",
+	}
+	apiUrl := viper.GetString("spotify_api_url") + "/me/top/artists"
+	topArtistRes, err := do[TopItemsResponse](uc, "GET", apiUrl, q)
 	if err != nil {
-		log.Error("could not create request", "error", err)
+		log.Error("could not complete top artist request", "error", err)
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
-	
-	res, err := client.Do(req)
-	if err != nil {
-		log.Error("could not get response", "error", err)
-		return nil, err
-	}
-
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Error("could not read response body", "error", err)
-		return nil, err
-	}
-	log.Debug("profile response body", "content", string(body))
-
-	var topArtist TopItemsResponse
-	if err := json.Unmarshal(body, &topArtist); err != nil {
-		log.Error("could not unmarshal response", "error", err)
-		return nil, err 
-	}
-	
-	return &topArtist, nil
+	return topArtistRes, nil
 }
 
-func TopTrack() (*TopItemsResponse, error) {
-	q := url.Values{}
-
-	q.Add("time_range", "short_term")
-	q.Add("limit", "1")
-	q.Add("offset", "0")
-
-	client := &http.Client{}
-	apiUrl := viper.GetString("spotify_api_url") + "/me/top/tracks?" + q.Encode()
-
-	log.Debug("creating request", "url", apiUrl)
-	req, err := http.NewRequest("GET", apiUrl, nil)
+func (uc *UserClient) TopTrack() (*TopItemsResponse, error) {
+	q := map[string]string{
+		"time_range": "short_term",
+		"limit": "1",
+		"offset": "0",
+	}
+	apiUrl := viper.GetString("spotify_api_url") + "/me/top/tracks" 
+	topTrackRes, err := do[TopItemsResponse](uc, "GET", apiUrl, q)
 	if err != nil {
-		log.Error("could not create request", "error", err)
+		log.Error("could not complete top track request", "error", err)
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + viper.GetString("access_token"))
-	
-	res, err := client.Do(req)
-	if err != nil {
-		log.Error("could not get response", "error", err)
-		return nil, err
-	}
-
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Error("could not read response body", "error", err)
-		return nil, err
-	}
-	log.Debug("profile response body", "content", string(body))
-
-	var topTrack TopItemsResponse
-	if err := json.Unmarshal(body, &topTrack); err != nil {
-		log.Error("could not unmarshal response", "error", err)
-		return nil, err 
-	}
-	
-	return &topTrack, nil
+	return topTrackRes, nil
 }
