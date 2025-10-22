@@ -18,10 +18,10 @@ import (
 var (
 	Verbose bool
 	Debug   bool
-
 	rootCmd = &cobra.Command{
-		Use:   "sgotify",
-		Short: "Spotify for the cli/tui",
+		Use:              "sgotify",
+		Short:            "Spotify for the cli/tui",
+		PersistentPreRun: requireAuth,
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Info("starting tui")
 
@@ -38,9 +38,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "will show all logs except debug")
 	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "will show all logs")
 
-	list.RootCmd.PreRun = requireAuth
-	set.RootCmd.PreRun = requireAuth
-	play.RootCmd.PreRun = requireAuth
 	rootCmd.AddCommand(
 		loginCmd,
 		list.RootCmd,
@@ -100,8 +97,12 @@ func initConfig() {
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {
-
 	log.Info("checking access token status")
+
+	if cmd.Use == "login" {
+		log.Info("this cmd does not require auth")
+		return
+	}
 
 	assert := func(condition bool) {
 		if condition {

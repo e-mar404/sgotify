@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	trackCmd = &cobra.Command {
-		Use: "track",
+	trackCmd = &cobra.Command{
+		Use:   "track",
 		Short: "play a spotify song",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			trackID := cmd.Flag("ID").Value.String()
@@ -18,7 +18,7 @@ var (
 			}
 
 			fmt.Printf("playing track %s on device %s\n", trackID, player.DeviceName)
-			
+
 			return nil
 		},
 	}

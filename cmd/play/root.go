@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	player = api.NewPlayer()
-	RootCmd = &cobra.Command {
-		Use: "play",
+	player  = api.NewPlayer()
+	RootCmd = &cobra.Command{
+		Use:   "play",
 		Short: "play spotify objects",
 	}
 )
