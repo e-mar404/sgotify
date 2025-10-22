@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/cmd/list"
+	"github.com/e-mar404/sgotify/cmd/play"
 	"github.com/e-mar404/sgotify/cmd/set"
 	"github.com/e-mar404/sgotify/internal/tui"
 	"github.com/spf13/cobra"
@@ -39,10 +40,12 @@ func init() {
 
 	list.RootCmd.PreRun = requireAuth
 	set.RootCmd.PreRun = requireAuth
+	play.RootCmd.PreRun = requireAuth
 	rootCmd.AddCommand(
 		loginCmd,
 		list.RootCmd,
 		set.RootCmd,
+		play.RootCmd,
 	)
 }
 
