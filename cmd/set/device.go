@@ -11,41 +11,44 @@ import (
 
 var (
 	devicesClient = api.NewDevicesClient()
+	id string
 	deviceCmd     = &cobra.Command{
 		Use:   "device",
 		Short: "Will set the device passed to be the output device for spotify",
-		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug("listing available devices")
-
 			deviceList, err := devicesClient.AvailableDevices()
 			if err != nil {
 				log.Error("device list api error", "error", err)
 				return err
 			}
 
-			input := args[0]
 			var defaultDevice api.DeviceItem
 			for _, device := range deviceList.Devcies {
-				if device.Name == input || device.ID == input {
+				if device.ID == id {
 					defaultDevice = device
 				}
 			}
 
-			// if loop could not find a matching device
 			if defaultDevice.Name == "" {
-				log.Error("not a valid device")
-				return fmt.Errorf("Could not find available device with name or id of %s", input)
+				log.Error("not a valid device", "id", id)
+				return fmt.Errorf("Could not find available device with id of %s", id)
 			}
 
 			viper.Set("default_device_id", defaultDevice.ID)
 			viper.Set("default_device_name", defaultDevice.Name)
 			if err := viper.WriteConfig(); err != nil {
 				log.Error("could not save default device to config", "error", err)
-				return fmt.Errorf("unable to save device %s as default", input)
+				return fmt.Errorf("unable to save device with id %s as default", id)
 			}
+			
+			fmt.Printf("successfully set device %s (%s)\n", id, defaultDevice.Name)
 
 			return nil
 		},
 	}
 )
+
+func init() {
+	deviceCmd.PersistentFlags().StringVar(&id, "id", "", "device id to set as default")
+	deviceCmd.MarkFlagRequired("id")
+}

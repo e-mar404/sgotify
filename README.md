@@ -66,10 +66,11 @@ Once it is ready to be used a lot of this will get simplified.
 - [ ] sgotify set
     - set different values used for playback
     - [ ] device \[param\]
-        - will set the device passed to be the default audio output, can be
-          either id or device name
+        - will set the device passed to be the default audio output
+        - needs flag for `--id` or `--name`
     - [ ] volume \[param\]
         - sets the volume, 0-100 
+        - something might need to be playing for this to take effect
 
 - [ ] sgotify play
     - [ ] track
