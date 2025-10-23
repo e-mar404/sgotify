@@ -97,13 +97,15 @@ func initConfig() {
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {
-	log.Info("checking access token status")
+	log.Info("checking to see if cmd needs auth")
 
-	if cmd.Use == "login" {
+	// login and logout are the only cmds that dont require auth
+	if cmd.Use == "login" || cmd.Use == "logout" {
 		log.Info("this cmd does not require auth")
 		return
 	}
 
+	log.Info("checking access token status")
 	assert := func(condition bool) {
 		if condition {
 			log.Error("not signed in")

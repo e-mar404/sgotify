@@ -26,7 +26,7 @@ Once it is ready to be used a lot of this will get simplified.
     - will start the tui
     - for now it is just a charm model that displays a "coming soon" msg
 
-- [ ] sgotify -h
+- [ ] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
     - as of now it gets automatically created done with cobra but it is not 
       pretty
