@@ -67,7 +67,7 @@ Once it is ready to be used a lot of this will get simplified.
     - set different values used for playback
     - [ ] device \[param\]
         - will set the device passed to be the default audio output
-        - needs flag for `--id` or `--name`
+        - needs flag for `--id`
     - [ ] volume \[param\]
         - sets the volume, 0-100 
         - something might need to be playing for this to take effect
