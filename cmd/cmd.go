@@ -25,7 +25,7 @@ func (cmds commands) AddCommand(name string, run func(command) error) {
 func initConfig() error {
 	viper.SetDefault("spotify_account_url", "https://accounts.spotify.com")
 	viper.SetDefault("spotify_api_url", "https://api.spotify.com/v1")
-	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080")
+	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
 	viper.SetDefault("client_id", "")
 	viper.SetDefault("client_secret", "")
 	viper.SetDefault("last_refresh", 0)
