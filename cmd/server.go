@@ -9,5 +9,5 @@ func serverHandler(_ command) error {
 }
 
 func init() {
-	availableCommands["server"] = serverHandler
+	availableCommands.AddCommand("server", serverHandler)
 }

@@ -8,5 +8,5 @@ func helpHandler(_ command) error {
 }
 
 func init() {
-	availableCommands["help"] = helpHandler
+	availableCommands.AddCommand("help", helpHandler)
 }
