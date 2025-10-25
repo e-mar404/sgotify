@@ -1,10 +1,11 @@
 package cmd
 
-import "github.com/charmbracelet/log"
+import (
+	"github.com/e-mar404/sgotify/api"
+)
 
-func serverHandler(cmd command) error {
-	log.Info("starting server...")
-	return nil
+func serverHandler(_ command) error {
+	return api.StartRPCServer()
 }
 
 func init() {

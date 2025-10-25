@@ -18,8 +18,6 @@ Will use viper for configuration
 
 - [ ] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
-    - as of now it gets automatically created done with cobra but it is not 
-      pretty
 
 - [ ] sgotify server
     - should start the rpc server
