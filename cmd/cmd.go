@@ -8,13 +8,13 @@ import (
 )
 
 type command struct {
-	name string
+	name      string
 	arguments []string
 }
 
 type commands map[string]func(command) error
 
-var availableCommands = map[string]func(command) error {}
+var availableCommands = map[string]func(command) error{}
 
 func (cmds commands) AddCommand(name string, run func(command) error) {
 	cmds[name] = run
@@ -30,7 +30,7 @@ func Execute() {
 		os.Exit(0)
 	}
 
-	cmdName := os.Args[1]	
+	cmdName := os.Args[1]
 	args := os.Args[2:]
 
 	run, ok := availableCommands[cmdName]
@@ -39,7 +39,7 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	cmd := command {
+	cmd := command{
 		cmdName,
 		args,
 	}
