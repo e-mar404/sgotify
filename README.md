@@ -19,6 +19,10 @@ Will use viper for configuration
 - [ ] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
 
+- [ ] sgotify login
+    - will start login process with http server
+    - save all the necessary fields to the config
+
 - [ ] sgotify server
     - should start the rpc server
     - will have regular logging by default 

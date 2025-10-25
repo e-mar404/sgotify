@@ -16,8 +16,8 @@ type LoginReply struct {
 
 type Auth struct{}
 
-func (a *Auth) Login(args *LoginArgs, reply *LoginReply) error {
-	log.Info("Auth.Login called")
+func (a *Auth) LoginWithCode(args *LoginArgs, reply *LoginReply) error {
+	log.Info("logging in with code")
 
 	*reply = LoginReply{
 		Msg: "logging in",
