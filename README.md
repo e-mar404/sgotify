@@ -22,8 +22,9 @@ Will use viper for configuration
 - [ ] sgotify login
     - will start login process with http server
     - save all the necessary fields to the config
+    - flag `-v` will show logs, without debug
 
 - [ ] sgotify server
     - should start the rpc server
     - will have regular logging by default 
-    - flag `-v` will show the debug logs
+    - flag `-v` will show all the logs, including debug

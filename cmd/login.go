@@ -10,6 +10,7 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/api"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -18,71 +19,75 @@ type Code struct {
 	State string
 }
 
+var (
+	loginCmd = &cobra.Command{
+		Use:    "login",
+		Short:  "start login process",
+		PreRun: prepLogs,
+		Run: func(cmd *cobra.Command, args []string) {
+			cid := viper.GetString("client_id")
+			cs := viper.GetString("client_secret")
+
+			credsExist := cid != "" || cs != ""
+			var useSavedCreds string
+			if credsExist {
+				prompt("Use saved creds? [Y|n] ", &useSavedCreds)
+			}
+
+			switch strings.ToLower(useSavedCreds) {
+			case "y":
+				break
+			case "n":
+				// if they dont get back to 0 value then it will use the old creds if just
+				// pressing enter with Scanln
+				cid = ""
+				cs = ""
+				prompt("Client ID: ", &cid)
+				prompt("Client Secret: ", &cs)
+
+				viper.Set("client_id", cid)
+				viper.Set("client_secret", cs)
+				if err := viper.WriteConfig(); err != nil {
+					log.Fatal("could not write to config file", "error", err)
+				}
+			default:
+				prompt("Not a valid answer. Use saved creds? [Y|n] \n", &useSavedCreds)
+			}
+
+			codeChan := make(chan Code)
+			go func() {
+				startHTTPServer(codeChan)
+			}()
+			code := <-codeChan
+
+			log.Info("received server response", "code", code)
+
+			authService := api.NewAuthService()
+			loginArgs := &api.LoginArgs{
+				ClientID:     cid,
+				ClientSecret: cs,
+				RedirectURI:  viper.GetString("redirect_uri"),
+				BaseURL:      viper.GetString("spotify_account_url"),
+				Code:         code.Code,
+				State:        code.State,
+			}
+			reply := &api.LoginReply{}
+			if err := authService.LoginWithCode(loginArgs, reply); err != nil {
+				log.Error("unable to log in with code", "error", err)
+			}
+			log.Info("reply from authService.LoginWithcode", "reply", reply)
+
+			viper.Set("access_token", reply.AccessToken)
+			viper.Set("refresh_token", reply.RefreshToken)
+			viper.Set("last_refresh", time.Now().Unix())
+
+			viper.WriteConfig()
+		},
+	}
+)
+
 func init() {
-	availableCommands.AddCommand("login", loginHandler)
-}
-
-// TODO: handle verbose flag for this command
-func loginHandler(_ command) error {
-	cid := viper.GetString("client_id")
-	cs := viper.GetString("client_secret")
-
-	credsExist := cid != "" || cs != ""
-	var useSavedCreds string
-	if credsExist {
-		prompt("Use saved creds? [Y|n] ", &useSavedCreds)
-	}
-
-	switch strings.ToLower(useSavedCreds) {
-	case "y":
-		break
-	case "n":
-		// if they dont get back to 0 value then it will use the old creds if just
-		// pressing enter with Scanln
-		cid = ""
-		cs = ""
-		prompt("Client ID: ", &cid)
-		prompt("Client Secret: ", &cs)
-
-		viper.Set("client_id", cid)
-		viper.Set("client_secret", cs)
-		if err := viper.WriteConfig(); err != nil {
-			log.Fatal("could not write to config file", "error", err)
-		}
-	default:
-		prompt("Not a valid answer. Use saved creds? [Y|n] \n", &useSavedCreds)
-	}
-
-	codeChan := make(chan Code)
-	go func() {
-		startHTTPServer(codeChan)
-	}()
-	code := <-codeChan
-
-	log.Info("received server response", "code", code)
-
-	authService := api.NewAuthService()
-	args := &api.LoginArgs{
-		ClientID:     cid,
-		ClientSecret: cs,
-		RedirectURI:  viper.GetString("redirect_uri"),
-		BaseURL:      viper.GetString("spotify_account_url"),
-		Code:         code.Code,
-		State:        code.State,
-	}
-	reply := &api.LoginReply{}
-	if err := authService.LoginWithCode(args, reply); err != nil {
-		log.Error("unable to log in with code", "error", err)
-	}
-	log.Info("reply from authService.LoginWithcode", "reply", reply)
-
-	viper.Set("access_token", reply.AccessToken)
-	viper.Set("refresh_token", reply.RefreshToken)
-	viper.Set("last_refresh", time.Now().Unix())
-
-	viper.WriteConfig()
-
-	return nil
+	rootCmd.AddCommand(loginCmd)
 }
 
 func prompt(q string, ans *string) {
