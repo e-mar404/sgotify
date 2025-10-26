@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-type prepArgs struct {
+type authPrepArgs struct {
 	ClientID     string
 	ClientSecret string
 }
 
 type AuthClient struct {
 	HTTP     *http.Client
-	prepArgs prepArgs
+	prepArgs authPrepArgs
 	query    map[string]string
 }
 

@@ -11,12 +11,28 @@ import (
 )
 
 type HomeUI struct {
-	loaded bool
-	help   help.Model
+	loaded  bool
+	help    help.Model
+	profile string
+}
+
+type profileMsg string
+type profileErrMsg error
+
+func fetchProfileCmd() tea.Cmd {
+	return func() tea.Msg {
+		args := 0
+		var reply string
+		err := client.Call("User.Profile", &args, &reply)
+		if err != nil {
+			return profileErrMsg(err)
+		}
+		return profileMsg(reply)
+	}
 }
 
 func (h HomeUI) Init() tea.Cmd {
-	return nil
+	return fetchProfileCmd()
 }
 
 func (h HomeUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -32,6 +48,13 @@ func (h HomeUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, constants.Keymap.Help):
 			h.help.ShowAll = !h.help.ShowAll
 		}
+
+	case profileMsg:
+		h.profile = string(msg)
+
+	case profileErrMsg:
+		log.Error("failed to fetch profile", "error", msg)
+		h.profile = "error"
 	}
 
 	return h, nil
@@ -51,7 +74,7 @@ func (h HomeUI) View() string {
 	content := constants.WindowStyle.
 		Height(constants.WindowSize.Height - borderOffset - helpOffset).
 		Width(constants.WindowSize.Width - borderOffset).
-		Render("TUI coming soon...")
+		Render(h.profile)
 
 	return content + "\n" + helpView
 }

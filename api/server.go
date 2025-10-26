@@ -5,11 +5,10 @@ import (
 	"net/rpc"
 
 	"github.com/charmbracelet/log"
-	"github.com/hashicorp/go-msgpack/codec"
+	"github.com/hashicorp/net-rpc-msgpackrpc"
 )
 
 var (
-	mh     codec.MsgpackHandle
 	server = rpc.NewServer()
 )
 
@@ -21,22 +20,12 @@ func StartRPCServer() error {
 	defer listener.Close()
 
 	log.Info("starting rpc server", "host", "localhost", "port", ":5000")
-	exit := make(chan error)
-	go func() {
-		for {
-			log.Info("awaiting connection")
-			conn, err := listener.Accept()
-			if err != nil {
-				exit <- err
-			}
-			codec := codec.GoRpc.ServerCodec(conn, &mh)
-			server.ServeCodec(codec)
+	for {
+		log.Info("awaiting connection")
+		conn, err := listener.Accept()
+		if err != nil {
+			return err
 		}
-	}()
-
-	exitErr := <-exit
-
-	log.Error("shutting down rpc server", "error", exitErr)
-
-	return err
+		go server.ServeCodec(msgpackrpc.NewServerCodec(conn))
+	}
 }
