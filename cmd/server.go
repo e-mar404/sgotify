@@ -2,12 +2,20 @@ package cmd
 
 import (
 	"github.com/e-mar404/sgotify/api"
+	"github.com/spf13/cobra"
 )
 
-func serverHandler(_ command) error {
-	return api.StartRPCServer()
-}
+var (
+	serverCmd = &cobra.Command{
+		Use:    "server",
+		Short:  "start rpc server",
+		PreRun: prepLogs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return api.StartRPCServer()
+		},
+	}
+)
 
 func init() {
-	availableCommands.AddCommand("server", serverHandler)
+	rootCmd.AddCommand(serverCmd)
 }

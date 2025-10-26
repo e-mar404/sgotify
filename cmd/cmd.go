@@ -6,23 +6,43 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/internal/tui"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-type command struct {
-	name      string
-	arguments []string
+var (
+	verbose bool
+
+	rootCmd = cobra.Command{
+		Use:   "sgotify",
+		Short: "start tui client",
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := tui.Run(); err != nil {
+				log.Error("something unexpected happened while running the tui", "error", err)
+				os.Exit(1)
+			}
+		},
+	}
+)
+
+func init() {
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "set verbose output")
 }
 
-type commands map[string]func(command) error
-
-var availableCommands = commands{}
-
-func (cmds commands) AddCommand(name string, run func(command) error) {
-	cmds[name] = run
+func Execute() {
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Error("unable to run sgotify", "error", err)
+		os.Exit(1)
+	}
 }
 
-func initConfig() error {
+func initConfig() {
+	log.SetOutput(os.Stderr)
+	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
+
 	viper.SetDefault("spotify_account_url", "https://accounts.spotify.com")
 	viper.SetDefault("spotify_api_url", "https://api.spotify.com/v1")
 	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
@@ -34,7 +54,8 @@ func initConfig() error {
 
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return err
+		log.Error("unable to find user's home dir", "error", err)
+		os.Exit(1)
 	}
 
 	configPath := filepath.Join(home, ".config", "sgotify", "config.json")
@@ -46,41 +67,19 @@ func initConfig() error {
 		viper.SafeWriteConfigAs(configPath)
 		viper.SetConfigFile(configPath)
 	}
-
-	return nil
 }
 
-func Execute() {
-	if err := initConfig(); err != nil {
-		log.Error("unable to initialize config", "error", err)
-		os.Exit(1)
+func prepLogs(cmd *cobra.Command, args []string) {
+	baseLevel := log.Level(13)
+	verboseLevel := log.Level(0)
+	if cmd.Use == "server" { // only the server cmd will have logs by default
+		baseLevel = log.Level(0)
+		verboseLevel = log.Level(-5)
 	}
 
-	if len(os.Args) == 1 {
-		log.Info("no cmd starting tui...")
-		if err := tui.Run(); err != nil {
-			log.Error("something unexpected happened while running the tui", "error", err)
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}
-
-	cmdName := os.Args[1]
-	args := os.Args[2:]
-
-	run, ok := availableCommands[cmdName]
-	if !ok {
-		log.Error("cmd not found", "name", cmdName)
-		os.Exit(1)
-	}
-
-	cmd := command{
-		cmdName,
-		args,
-	}
-
-	if err := run(cmd); err != nil {
-		log.Error("command failed", "error", err)
-		os.Exit(1)
+	if verbose {
+		log.SetLevel(verboseLevel)
+	} else {
+		log.SetLevel(baseLevel)
 	}
 }
