@@ -37,7 +37,7 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *LoginReply) error {
 		"grant_type":   "authorization_code",
 	}
 	url := args.BaseURL + "/api/token"
-	a.Client.prepArgs = prepArgs{
+	a.Client.prepArgs = authPrepArgs{
 		ClientID:     args.ClientID,
 		ClientSecret: args.ClientSecret,
 	}

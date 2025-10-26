@@ -81,7 +81,9 @@ var (
 			viper.Set("refresh_token", reply.RefreshToken)
 			viper.Set("last_refresh", time.Now().Unix())
 
+			fmt.Printf("Saving configuration...\n")
 			viper.WriteConfig()
+			fmt.Printf("Congratulations. Login successful!\n")
 		},
 	}
 )
@@ -146,14 +148,15 @@ func startHTTPServer(resChan chan Code) {
 	http.Handle("/callback", callbackHandler)
 
 	serverHost := "127.0.0.1"
-	serverPort := ":8080"
+	serverPort := "8080"
 	log.Info(
 		"staring server",
 		"host", serverHost,
 		"port", serverPort,
 	)
 
-	if err := http.ListenAndServe(serverHost+serverPort, nil); err != nil {
+	fmt.Printf("Please go to %s:%s on your browser\n", serverHost, serverPort)
+	if err := http.ListenAndServe(serverHost+":"+serverPort, nil); err != nil {
 		log.Fatal("something unexpected happened with the server", "error", err)
 	}
 }

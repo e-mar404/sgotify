@@ -19,12 +19,28 @@ Will use viper for configuration
 - [ ] sgotify help
     - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
 
-- [ ] sgotify login
+- [x] sgotify login
     - will start login process with http server
     - save all the necessary fields to the config
     - flag `-v` will show logs, without debug
 
-- [ ] sgotify server
+- [x] sgotify server
     - should start the rpc server
     - will have regular logging by default 
     - flag `-v` will show all the logs, including debug
+
+## Default client
+
+Ill be writing the progress of it in here since there is no clear outline yet.
+
+10/26/2025
+================================================================================
+Lets start with the home page showing a users profile. The profile will consist
+of:
+
+- User pfp (if kitty protocols are available) or the spotify logo
+- username
+- follower count
+- top track (past 30 days)
+- top artist (past 30 days)
+
