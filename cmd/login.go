@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/e-mar404/sgotify/api"
 	"github.com/spf13/viper"
 )
 
@@ -20,12 +22,13 @@ func init() {
 	availableCommands.AddCommand("login", loginHandler)
 }
 
+// TODO: handle verbose flag for this command
 func loginHandler(_ command) error {
 	cid := viper.GetString("client_id")
 	cs := viper.GetString("client_secret")
 
 	credsExist := cid != "" || cs != ""
-	useSavedCreds := "n" // defaults to always asking for creds
+	var useSavedCreds string
 	if credsExist {
 		prompt("Use saved creds? [Y|n] ", &useSavedCreds)
 	}
@@ -58,8 +61,26 @@ func loginHandler(_ command) error {
 
 	log.Info("received server response", "code", code)
 
-	// get access + refresh token
-	// save everything config to ~/.config/sgotigy/conf.json
+	authService := api.NewAuthService()
+	args := &api.LoginArgs{
+		ClientID:     cid,
+		ClientSecret: cs,
+		RedirectURI:  viper.GetString("redirect_uri"),
+		BaseURL:      viper.GetString("spotify_account_url"),
+		Code:         code.Code,
+		State:        code.State,
+	}
+	reply := &api.LoginReply{}
+	if err := authService.LoginWithCode(args, reply); err != nil {
+		log.Error("unable to log in with code", "error", err)
+	}
+	log.Info("reply from authService.LoginWithcode", "reply", reply)
+
+	viper.Set("access_token", reply.AccessToken)
+	viper.Set("refresh_token", reply.RefreshToken)
+	viper.Set("last_refresh", time.Now().Unix())
+
+	viper.WriteConfig()
 
 	return nil
 }
@@ -68,6 +89,10 @@ func prompt(q string, ans *string) {
 	fmt.Printf("%s", q)
 	fmt.Scanln(ans)
 
+	// if ans is empty then user chose default answer "Y"
+	if *ans == "" {
+		*ans = "Y"
+	}
 }
 
 func startHTTPServer(resChan chan Code) {
