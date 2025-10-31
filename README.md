@@ -4,9 +4,12 @@
 
 ## Vision
 
-There will be 2 parts to the service, the server and the viewer (client). The
-client and server will communicate with rpc-msgpack so the client can be written
-to use in other places as well (ie. neovim).
+There will be 3 parts to the service, the server, the cli, and the viewer 
+(client). The client and the cli will be very similar, they will both be able to
+do the same things since they will both be calling the same api functions it 
+just differs on how they look. The client and server will communicate with 
+rpc-msgpack so the client can be written to use in other places as well (ie. 
+neovim).
 
 ### Commands to write
 
@@ -23,6 +26,23 @@ Will use viper for configuration
     - will start login process with http server
     - save all the necessary fields to the config
     - flag `-v` will show logs, without debug
+
+- [x] sgotify logout
+    - remove auth & refresh tokens, client id and secret and default device id
+
+- [ ] sgotify device 
+    - flag `--list | -l` will list available devices
+    - flag `--set | -s` will set a device defined by flag `--deviceID=id`
+
+- [ ] sgotify player
+    - [ ] play 
+        - continue playing wtv was playing before
+        - if song is given as an arg then it will search that song and play the
+          first result with option to pass flag `--select` then you have to
+          select the song out of the first few search results
+    - [ ] pause: pause player
+    - [ ] prev: go to the previously played song
+    - [ ] next: go to the next song 
 
 - [x] sgotify server
     - should start the rpc server
