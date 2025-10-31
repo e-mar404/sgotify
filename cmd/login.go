@@ -27,11 +27,16 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			cid := viper.GetString("client_id")
 			cs := viper.GetString("client_secret")
+	
+			log.Info("checking if creds exist",
+				"cid", cid, 
+				"cs", cs,
+			)
 
-			credsExist := cid != "" || cs != ""
-			var useSavedCreds string
+			credsExist := cid != "" && cs != ""
+			useSavedCreds := "n"
 			if credsExist {
-				prompt("Use saved creds? [Y|n] ", &useSavedCreds)
+				prompt("Use saved creds? [Y|n] ", &useSavedCreds, "Y")
 			}
 
 			switch strings.ToLower(useSavedCreds) {
@@ -42,8 +47,8 @@ var (
 				// pressing enter with Scanln
 				cid = ""
 				cs = ""
-				prompt("Client ID: ", &cid)
-				prompt("Client Secret: ", &cs)
+				prompt("Client ID: ", &cid, "")
+				prompt("Client Secret: ", &cs, "")
 
 				viper.Set("client_id", cid)
 				viper.Set("client_secret", cs)
@@ -51,7 +56,7 @@ var (
 					log.Fatal("could not write to config file", "error", err)
 				}
 			default:
-				prompt("Not a valid answer. Use saved creds? [Y|n] \n", &useSavedCreds)
+				prompt("Not a valid answer. Use saved creds? [Y|n] \n", &useSavedCreds, "Y")
 			}
 
 			codeChan := make(chan Code)
@@ -92,13 +97,13 @@ func init() {
 	rootCmd.AddCommand(loginCmd)
 }
 
-func prompt(q string, ans *string) {
+func prompt(q string, ans *string, defaultAns string) {
 	fmt.Printf("%s", q)
 	fmt.Scanln(ans)
 
 	// if ans is empty then user chose default answer "Y"
 	if *ans == "" {
-		*ans = "Y"
+		*ans = defaultAns 
 	}
 }
 
