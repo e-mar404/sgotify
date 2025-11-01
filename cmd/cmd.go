@@ -72,6 +72,14 @@ func initConfig() {
 	}
 }
 
+func batch(cmds ...func(*cobra.Command, []string)) func(*cobra.Command, []string) {
+	return  func(c *cobra.Command, s []string) {
+		for _, cmd := range cmds {
+			cmd(c, s)
+		}
+	}
+}
+
 func prepLogs(cmd *cobra.Command, args []string) {
 	baseLevel := log.Level(13)
 	verboseLevel := log.Level(0)
