@@ -51,6 +51,17 @@ Will use viper for configuration
 
 Ill be writing the progress of it in here since there is no clear outline yet.
 
+11/01/2025
+================================================================================
+
+Refactoring in such a way that the cli is just a way to interact with the
+server.
+
+This means that I will have to create a client whenever the cli starts and. 
+
+Also because I will be focusing on the cli aspect of it right now i will delete
+the tui part of it, that can be done later.
+
 10/26/2025
 ================================================================================
 Lets start with the home page showing a users profile. The profile will consist
