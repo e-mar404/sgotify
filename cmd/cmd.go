@@ -8,7 +8,6 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/api"
-	"github.com/e-mar404/sgotify/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,10 +19,7 @@ var (
 		Use:   "sgotify",
 		Short: "start tui client",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := tui.Run(); err != nil {
-				log.Error("something unexpected happened while running the tui", "error", err)
-				os.Exit(1)
-			}
+			fmt.Printf("tui client coming soon...\n")
 		},
 	}
 )
