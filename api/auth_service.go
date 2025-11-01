@@ -15,22 +15,27 @@ type LoginArgs struct {
 	State        string
 }
 
-type LoginReply struct {
+type RefreshArgs struct {
+	RefreshToken string
+	BaseURL string
+}
+
+type CredentialsReply struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 
-type Auth struct {
+type AuthService struct {
 	Client *AuthClient
 }
 
-func NewAuthService() *Auth {
-	return &Auth{
+func NewAuthService() *AuthService {
+	return &AuthService{
 		Client: NewAuthClient(),
 	}
 }
 
-func (a *Auth) LoginWithCode(args *LoginArgs, reply *LoginReply) error {
+func (a *AuthService) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 	q := map[string]string{
 		"code":         args.Code,
 		"redirect_uri": args.RedirectURI,
@@ -42,7 +47,7 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *LoginReply) error {
 		ClientSecret: args.ClientSecret,
 	}
 
-	loginRes, err := do[LoginReply](a.Client, "POST", url, q)
+	loginRes, err := do[CredentialsReply](a.Client, "POST", url, q)
 	if err != nil {
 		log.Error("unable to do LoginWithCode req", "error", err)
 		return err
@@ -53,16 +58,18 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *LoginReply) error {
 	return nil
 }
 
-// func (ac *AuthClient) RefreshAccessToken() (*LoginResponse, error) {
-// 	q := map[string]string{
-// 		"grant_type":    "refresh_token",
-// 		"refresh_token": viper.GetString("refresh_token"),
-// 	}
-// 	url := viper.GetString("spotify_account_url") + "/api/token"
-// 	refreshRes, err := do[LoginResponse](ac, "POST", url, q)
-// 	if err != nil {
-// 		log.Error("could not refresh access token", "error", err)
-// 		return nil, err
-// 	}
-// 	return refreshRes, nil
-// }
+func (a *AuthService) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) error {
+	q := map[string]string{
+		"grant_type":    "refresh_token",
+		"refresh_token": args.RefreshToken, 
+	}
+	url := args.BaseURL + "/api/token"
+	creds, err := do[CredentialsReply](a.Client, "POST", url, q)
+	if err != nil {
+		return err
+	}
+
+	*reply = *creds
+
+	return  nil
+}
