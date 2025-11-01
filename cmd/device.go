@@ -17,7 +17,7 @@ var (
 	playerCmd = &cobra.Command{
 		Use: "player",
 		Short: "command to interact with a spotify player state",
-		PreRun: requireAuth,
+		PreRun: batch(prepLogs, requireAuth), 
 		Run: func(cmd *cobra.Command, args []string) {
 			switch {
 			case list:
