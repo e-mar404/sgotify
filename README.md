@@ -30,11 +30,9 @@ Will use viper for configuration
 - [x] sgotify logout
     - remove auth & refresh tokens, client id and secret and default device id
 
-- [ ] sgotify device 
-    - flag `--list | -l` will list available devices
-    - flag `--set | -s` will set a device defined by flag `--deviceID=id`
-
 - [ ] sgotify player
+    - flag `--list-devices | -l` will list available devices
+    - flag `--set-device | -s` will set a device defined by flag `--deviceID=id`
     - [ ] play 
         - continue playing wtv was playing before
         - if song is given as an arg then it will search that song and play the

@@ -20,6 +20,8 @@ type Code struct {
 }
 
 var (
+	authService = api.NewAuthService()
+
 	loginCmd = &cobra.Command{
 		Use:    "login",
 		Short:  "start login process",
@@ -67,7 +69,6 @@ var (
 
 			log.Info("received server response", "code", code)
 
-			authService := api.NewAuthService()
 			loginArgs := &api.LoginArgs{
 				ClientID:     cid,
 				ClientSecret: cs,
@@ -76,7 +77,7 @@ var (
 				Code:         code.Code,
 				State:        code.State,
 			}
-			reply := &api.LoginReply{}
+			reply := &api.CredentialsReply{}
 			if err := authService.LoginWithCode(loginArgs, reply); err != nil {
 				log.Error("unable to log in with code", "error", err)
 			}
@@ -109,7 +110,6 @@ func prompt(q string, ans *string, defaultAns string) {
 
 func startHTTPServer(resChan chan Code) {
 	redirectHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// create spotify link
 		clientID := viper.GetString("client_id")
 		redirectURI := viper.GetString("redirect_uri")
 		state := rand.Text()
