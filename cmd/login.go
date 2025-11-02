@@ -20,8 +20,6 @@ type Code struct {
 }
 
 var (
-	authService = api.NewAuthService()
-
 	loginCmd = &cobra.Command{
 		Use:    "login",
 		Short:  "start login process",
@@ -78,7 +76,7 @@ var (
 				State:        code.State,
 			}
 			reply := &api.CredentialsReply{}
-			if err := authService.LoginWithCode(loginArgs, reply); err != nil {
+			if err := client.Call("Auth.LoginWithCode", loginArgs, reply); err != nil {
 				log.Error("unable to log in with code", "error", err)
 			}
 			log.Info("reply from authService.LoginWithcode", "reply", reply)

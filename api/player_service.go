@@ -7,7 +7,7 @@ type Player struct {
 }
 
 type PlayerArgs struct {
-	BaseUrl string
+	BaseURL string
 	AccessToken string
 }
 
@@ -20,7 +20,7 @@ type AvailableDevicesReply struct {
 }
 
 func init() {
-	server.Register(&Player{})
+	server.Register(NewPlayerService())
 }
 
 func NewPlayerService() *Player {
@@ -30,15 +30,18 @@ func NewPlayerService() *Player {
 }
 
 func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply) error {
-	p.Client.args = *args
+	log.Info("called Player.AvailableDevices")
 
-	url := args.BaseUrl + "/me/player/devices"
+	p.Client.args.BaseURL = args.BaseURL
+	p.Client.args.AccessToken = args.AccessToken
+
+	url := args.BaseURL + "/me/player/devices"
 	availableDevices, err := do[AvailableDevicesReply](p.Client, "GET", url, nil)
 	if err != nil {
 		return err
 	}
 	
-	log.Info("got reply", "available devices", availableDevices)
+	log.Debug("got reply", "available devices", availableDevices)
 
 	*reply = *availableDevices
 

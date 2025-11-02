@@ -12,8 +12,6 @@ import (
 var (
 	list bool
 
-	playerService = api.NewPlayerService()
-
 	playerCmd = &cobra.Command{
 		Use: "player",
 		Short: "command to interact with a spotify player state",
@@ -21,12 +19,12 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			switch {
 			case list:
-				args := api.PlayerArgs{
-					BaseUrl: viper.GetString("spotify_api_url"),
+				args := &api.PlayerArgs{
+					BaseURL: viper.GetString("spotify_api_url"),
 					AccessToken: viper.GetString("access_token"),
 				}
-				reply := api.AvailableDevicesReply{}
-				err := playerService.AvailableDevices(&args, &reply)
+				reply := &api.AvailableDevicesReply{}
+				err := client.Call("Player.AvailableDevices", args, reply)
 				if err != nil {
 					fmt.Printf("could not get available devices\n")
 					log.Fatal("could not get available devices", "error", err)

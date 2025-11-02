@@ -18,7 +18,7 @@ var (
 	rootCmd = cobra.Command{
 		Use:   "sgotify",
 		Short: "start tui client",
-		PersistentPostRun: prepLogs,
+		PersistentPreRun: prepLogs,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("tui client coming soon...\n")
 

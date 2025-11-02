@@ -36,6 +36,8 @@ func NewAuthService() *Auth {
 }
 
 func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
+	log.Info("called Auth.LoginWithCode")
+
 	q := map[string]string{
 		"code":         args.Code,
 		"redirect_uri": args.RedirectURI,
@@ -59,6 +61,8 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 }
 
 func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) error {
+	log.Info("called Auth.RefreshAccessToken")
+
 	q := map[string]string{
 		"grant_type":    "refresh_token",
 		"refresh_token": args.RefreshToken, 

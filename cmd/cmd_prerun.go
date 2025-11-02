@@ -44,7 +44,6 @@ func startClient(_ *cobra.Command, _ []string) {
 		log.Fatal("unable to connect to server", "error", err)
 	}
 	client = rpc.NewClientWithCodec(msgpackrpc.NewClientCodec(conn))
-	defer client.Close()
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {

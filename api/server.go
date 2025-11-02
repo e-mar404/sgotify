@@ -21,7 +21,6 @@ func StartRPCServer() error {
 
 	log.Info("starting rpc server", "host", "localhost", "port", ":5000")
 	for {
-		log.Info("awaiting connection")
 		conn, err := listener.Accept()
 		if err != nil {
 			return err

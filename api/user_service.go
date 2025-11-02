@@ -45,7 +45,7 @@ func NewUserService() *User {
 }
 
 func (u *User) Profile(args *ProfileArgs, reply *ProfileReply) error {
-	log.Info("calling user.profile")
+	log.Info("called User.Profile")
 	
 	u.Client.args = *args
 
