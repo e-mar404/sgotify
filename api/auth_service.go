@@ -25,17 +25,17 @@ type CredentialsReply struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type AuthService struct {
+type Auth struct {
 	Client *AuthClient
 }
 
-func NewAuthService() *AuthService {
-	return &AuthService{
+func NewAuthService() *Auth {
+	return &Auth{
 		Client: NewAuthClient(),
 	}
 }
 
-func (a *AuthService) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
+func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 	q := map[string]string{
 		"code":         args.Code,
 		"redirect_uri": args.RedirectURI,
@@ -58,7 +58,7 @@ func (a *AuthService) LoginWithCode(args *LoginArgs, reply *CredentialsReply) er
 	return nil
 }
 
-func (a *AuthService) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) error {
+func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) error {
 	q := map[string]string{
 		"grant_type":    "refresh_token",
 		"refresh_token": args.RefreshToken, 

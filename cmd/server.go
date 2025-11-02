@@ -9,7 +9,6 @@ var (
 	serverCmd = &cobra.Command{
 		Use:    "server",
 		Short:  "start rpc server",
-		PreRun: batch(prepLogs, requireAuth), 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return api.StartRPCServer()
 		},

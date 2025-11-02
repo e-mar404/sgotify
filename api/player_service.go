@@ -2,7 +2,7 @@ package api
 
 import "github.com/charmbracelet/log"
 
-type PlayerService struct {
+type Player struct {
 	Client *PlayerClient
 }
 
@@ -20,16 +20,16 @@ type AvailableDevicesReply struct {
 }
 
 func init() {
-	server.Register(&PlayerService{})
+	server.Register(&Player{})
 }
 
-func NewPlayerService() *PlayerService {
-	return &PlayerService{
+func NewPlayerService() *Player {
+	return &Player{
 		Client: NewPlayerClient(),
 	}
 }
 
-func (p *PlayerService) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply) error {
+func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply) error {
 	p.Client.args = *args
 
 	url := args.BaseUrl + "/me/player/devices"

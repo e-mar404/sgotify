@@ -25,7 +25,7 @@ var (
 	loginCmd = &cobra.Command{
 		Use:    "login",
 		Short:  "start login process",
-		PreRun: prepLogs,
+		PreRun: startClient,
 		Run: func(cmd *cobra.Command, args []string) {
 			cid := viper.GetString("client_id")
 			cs := viper.GetString("client_secret")

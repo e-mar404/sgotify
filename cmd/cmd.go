@@ -2,24 +2,26 @@ package cmd
 
 import (
 	"fmt"
+	"net/rpc"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/charmbracelet/log"
-	"github.com/e-mar404/sgotify/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
 	verbose bool
+	client *rpc.Client
 
 	rootCmd = cobra.Command{
 		Use:   "sgotify",
 		Short: "start tui client",
+		PersistentPostRun: prepLogs,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("tui client coming soon...\n")
+
 		},
 	}
 )
@@ -66,65 +68,4 @@ func initConfig() {
 		viper.SafeWriteConfigAs(configPath)
 		viper.SetConfigFile(configPath)
 	}
-}
-
-func batch(cmds ...func(*cobra.Command, []string)) func(*cobra.Command, []string) {
-	return  func(c *cobra.Command, s []string) {
-		for _, cmd := range cmds {
-			cmd(c, s)
-		}
-	}
-}
-
-func prepLogs(cmd *cobra.Command, args []string) {
-	baseLevel := log.Level(13)
-	verboseLevel := log.Level(0)
-	if cmd.Use == "server" { // only the server cmd will have logs by default
-		baseLevel = log.Level(0)
-		verboseLevel = log.Level(-5)
-	}
-
-	if verbose {
-		log.SetLevel(verboseLevel)
-	} else {
-		log.SetLevel(baseLevel)
-	}
-}
-
-func requireAuth(cmd *cobra.Command, args []string) {
-	log.Info("checking access token status")
-	assert := func(condition bool) {
-		if condition {
-			fmt.Fprintln(os.Stderr, "Please run `sgotify login` first.")
-			log.Fatal("not signed in")
-		}
-	}
-
-	accessToken := viper.GetString("access_token")
-	assert(accessToken == "")
-
-	last_refresh := viper.GetInt64("last_refresh")
-	if time.Now().Add(-time.Minute*55).Unix() <= last_refresh {
-		log.Info("Access token is still good, not refreshing")
-		return
-	}
-
-	log.Info("asking for a new access token")
-
-	refreshArgs := api.RefreshArgs {
-		RefreshToken: viper.GetString("refresh_token"),
-		BaseURL: viper.GetString("spotify_api_url"),
-	}
-	reply := api.CredentialsReply{}
-	err := authService.RefreshAccessToken(&refreshArgs, &reply)
-	assert(err != nil)
-
-	viper.Set("access_token", reply.AccessToken)
-	viper.Set("last_refresh", time.Now().Unix())
-	if reply.RefreshToken != "" {
-		viper.Set("refresh_token", reply.RefreshToken)
-	}
-
-	err = viper.WriteConfig()
-	assert(err != nil)
 }
