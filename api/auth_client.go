@@ -21,6 +21,7 @@ func NewAuthClient() *AuthClient {
 	return &AuthClient{
 		HTTP: &http.Client{
 			Timeout: 10 * time.Second,
+			// Jar: jar,
 		},
 	}
 }

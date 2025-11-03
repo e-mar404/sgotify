@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 )
 
 type UserClient struct {
@@ -20,6 +21,9 @@ func (u *UserClient) do(req *http.Request) (*http.Response, error) {
 
 func NewUserClient() *UserClient {
 	return &UserClient{
-		HTTP: &http.Client{},
+		HTTP: &http.Client{
+			Timeout: 10*time.Second,
+			// Jar: jar,
+		},
 	}
 }

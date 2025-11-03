@@ -15,6 +15,7 @@ func NewPlayerClient() *PlayerClient {
 	return &PlayerClient{
 		HTTP: &http.Client{
 			Timeout: 10 * time.Second,
+			// Jar: jar,
 		},
 	}
 }

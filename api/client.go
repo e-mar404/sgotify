@@ -15,7 +15,7 @@ type Client interface {
 }
 
 // Takes in a client and will Unmarshal the response that it gets into struct T
-func do[T any](c Client, method string, urlPath string, q map[string]string) (*T, error) {
+func do[T any](c Client, method string, urlPath string, q map[string]string) (reply *T, err error) {
 	query := url.Values{}
 	for key, value := range q {
 		query.Add(key, value)
@@ -36,20 +36,25 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (*T
 		log.Error("could not complete request", "method", method, "fullUrl", fullUrl)
 		return nil, err
 	}
-	log.Debug("completed request", "res", res)
+	log.Debug("completed request", "status", res.Status)
 
 	// TODO: check status code here
 
 	defer res.Body.Close()
 
-	var resStruct T
 	body, _ := io.ReadAll(res.Body)
 	log.Debug("raw res body", "body", string(body))
-	if err := json.Unmarshal(body, &resStruct); err != nil {
+	if err := json.Unmarshal(body, &reply); err != nil {
 		log.Error("could not unmarshal response", "error", err)
 		return nil, err
 	}
-	log.Debug("returning unmashaled res body", "resStruct", resStruct)
 
-	return &resStruct, nil
+	if len(res.Cookies()) > 0 {
+		if err := saveCookies(res.Cookies()); err != nil {
+			log.Error("could not save cookies, will need to re login if server is stopped", "error", err)
+		}
+	}
+
+	log.Debug("returning unmashaled res body", "resStruct", *reply)
+	return reply, nil
 }

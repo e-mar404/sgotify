@@ -1,6 +1,8 @@
 package api
 
-import "github.com/charmbracelet/log"
+import (
+	"github.com/charmbracelet/log"
+)
 
 func init() {
 	server.Register(NewAuthService())

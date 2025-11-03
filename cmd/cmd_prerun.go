@@ -59,7 +59,7 @@ func requireAuth(cmd *cobra.Command, args []string) {
 	assert(accessToken == "")
 
 	last_refresh := viper.GetInt64("last_refresh")
-	if time.Now().Add(-time.Minute*55).Unix() <= last_refresh {
+	if time.Now().Add(-time.Second*1).Unix() <= last_refresh {
 		log.Info("Access token is still good, not refreshing")
 		return
 	}
@@ -68,7 +68,7 @@ func requireAuth(cmd *cobra.Command, args []string) {
 
 	refreshArgs := &api.RefreshArgs {
 		RefreshToken: viper.GetString("refresh_token"),
-		BaseURL: viper.GetString("spotify_api_url"),
+		BaseURL: viper.GetString("spotify_account_url"),
 	}
 	reply := &api.CredentialsReply{}
 	err := client.Call("Auth.RefreshAccessToken", refreshArgs, reply)
