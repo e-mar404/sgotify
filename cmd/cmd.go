@@ -13,11 +13,11 @@ import (
 
 var (
 	verbose bool
-	client *rpc.Client
+	client  *rpc.Client
 
 	rootCmd = cobra.Command{
-		Use:   "sgotify",
-		Short: "start tui client",
+		Use:              "sgotify",
+		Short:            "start tui client",
 		PersistentPreRun: prepLogs,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("tui client coming soon...\n")

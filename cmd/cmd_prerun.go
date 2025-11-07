@@ -15,7 +15,7 @@ import (
 )
 
 func batch(cmds ...func(*cobra.Command, []string)) func(*cobra.Command, []string) {
-	return  func(c *cobra.Command, s []string) {
+	return func(c *cobra.Command, s []string) {
 		for _, cmd := range cmds {
 			cmd(c, s)
 		}
@@ -38,7 +38,7 @@ func prepLogs(cmd *cobra.Command, args []string) {
 }
 
 func startClient(_ *cobra.Command, _ []string) {
-	conn, err := net.Dial("tcp", "localhost:5000") 
+	conn, err := net.Dial("tcp", "localhost:5000")
 	if err != nil {
 		fmt.Printf("couldn't find rpc server\n")
 		log.Fatal("unable to connect to server", "error", err)
@@ -59,16 +59,18 @@ func requireAuth(cmd *cobra.Command, args []string) {
 	assert(accessToken == "")
 
 	last_refresh := viper.GetInt64("last_refresh")
-	if time.Now().Add(-time.Second*1).Unix() <= last_refresh {
+	if time.Now().Add(-time.Minute*55).Unix() <= last_refresh {
 		log.Info("Access token is still good, not refreshing")
 		return
 	}
 
 	log.Info("asking for a new access token")
 
-	refreshArgs := &api.RefreshArgs {
+	refreshArgs := &api.RefreshArgs{
 		RefreshToken: viper.GetString("refresh_token"),
-		BaseURL: viper.GetString("spotify_account_url"),
+		BaseURL:      viper.GetString("spotify_account_url"),
+		ClientID:     viper.GetString("client_id"),
+		ClientSecret: viper.GetString("client_secret"),
 	}
 	reply := &api.CredentialsReply{}
 	err := client.Call("Auth.RefreshAccessToken", refreshArgs, reply)

@@ -7,8 +7,8 @@ import (
 
 var (
 	serverCmd = &cobra.Command{
-		Use:    "server",
-		Short:  "start rpc server",
+		Use:   "server",
+		Short: "start rpc server",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return api.StartRPCServer()
 		},

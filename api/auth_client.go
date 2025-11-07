@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"net/http"
 	"time"
+
+	"github.com/charmbracelet/log"
 )
 
 type authPrepArgs struct {
@@ -21,17 +23,18 @@ func NewAuthClient() *AuthClient {
 	return &AuthClient{
 		HTTP: &http.Client{
 			Timeout: 10 * time.Second,
-			// Jar: jar,
 		},
 	}
 }
 
 func (ac *AuthClient) do(req *http.Request) (*http.Response, error) {
-	return ac.HTTP.Do(req)
+	res, err := ac.HTTP.Do(req)
+	return res, err
 }
 
 func (ac *AuthClient) prep(req *http.Request) {
 	data := ac.prepArgs.ClientID + ":" + ac.prepArgs.ClientSecret
+	log.Debug("data", "data", data)
 	encodedData := base64.StdEncoding.EncodeToString([]byte(data))
 	authKey := "Basic " + encodedData
 

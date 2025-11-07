@@ -27,9 +27,9 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			cid := viper.GetString("client_id")
 			cs := viper.GetString("client_secret")
-	
+
 			log.Info("checking if creds exist",
-				"cid", cid, 
+				"cid", cid,
 				"cs", cs,
 			)
 
@@ -102,7 +102,7 @@ func prompt(q string, ans *string, defaultAns string) {
 
 	// if ans is empty then user chose default answer "Y"
 	if *ans == "" {
-		*ans = defaultAns 
+		*ans = defaultAns
 	}
 }
 

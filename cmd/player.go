@@ -13,14 +13,14 @@ var (
 	list bool
 
 	playerCmd = &cobra.Command{
-		Use: "player",
-		Short: "command to interact with a spotify player state",
+		Use:    "player",
+		Short:  "command to interact with a spotify player state",
 		PreRun: batch(startClient, requireAuth),
 		Run: func(cmd *cobra.Command, args []string) {
 			switch {
 			case list:
 				args := &api.PlayerArgs{
-					BaseURL: viper.GetString("spotify_api_url"),
+					BaseURL:     viper.GetString("spotify_api_url"),
 					AccessToken: viper.GetString("access_token"),
 				}
 				reply := &api.AvailableDevicesReply{}

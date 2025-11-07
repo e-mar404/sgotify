@@ -19,7 +19,9 @@ type LoginArgs struct {
 
 type RefreshArgs struct {
 	RefreshToken string
-	BaseURL string
+	BaseURL      string
+	ClientID     string
+	ClientSecret string
 }
 
 type CredentialsReply struct {
@@ -67,9 +69,13 @@ func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) er
 
 	q := map[string]string{
 		"grant_type":    "refresh_token",
-		"refresh_token": args.RefreshToken, 
+		"refresh_token": args.RefreshToken,
 	}
 	url := args.BaseURL + "/api/token"
+	a.Client.prepArgs = authPrepArgs{
+		ClientID:     args.ClientID,
+		ClientSecret: args.ClientSecret,
+	}
 	creds, err := do[CredentialsReply](a.Client, "POST", url, q)
 	if err != nil {
 		return err
@@ -77,5 +83,5 @@ func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) er
 
 	*reply = *creds
 
-	return  nil
+	return nil
 }

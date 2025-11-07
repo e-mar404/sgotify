@@ -7,15 +7,15 @@ type Player struct {
 }
 
 type PlayerArgs struct {
-	BaseURL string
+	BaseURL     string
 	AccessToken string
 }
 
 type AvailableDevicesReply struct {
 	Devices []struct {
-		ID string `json:"id"`
-		Name string `json:"name"`	
-		Volume int `json:"volume"`
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		Volume int    `json:"volume"`
 	} `json:"devices"`
 }
 
@@ -40,11 +40,10 @@ func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply
 	if err != nil {
 		return err
 	}
-	
+
 	log.Debug("got reply", "available devices", availableDevices)
 
 	*reply = *availableDevices
 
 	return nil
 }
-

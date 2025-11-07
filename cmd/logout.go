@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	logoutCmd = &cobra.Command {
-		Use: "logout",
+	logoutCmd = &cobra.Command{
+		Use:   "logout",
 		Short: "will remove any identifiable information from configuration",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("logging out...\n")
-			
+
 			viper.Set("client_id", "")
 			viper.Set("client_secret", "")
 			viper.Set("last_refresh", 0)

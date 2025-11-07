@@ -49,12 +49,6 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (re
 		return nil, err
 	}
 
-	if len(res.Cookies()) > 0 {
-		if err := saveCookies(res.Cookies()); err != nil {
-			log.Error("could not save cookies, will need to re login if server is stopped", "error", err)
-		}
-	}
-
 	log.Debug("returning unmashaled res body", "resStruct", *reply)
 	return reply, nil
 }

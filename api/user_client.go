@@ -6,9 +6,9 @@ import (
 )
 
 type UserClient struct {
-	HTTP     *http.Client
-	args 		 ProfileArgs 
-	Query    map[string]string
+	HTTP  *http.Client
+	args  ProfileArgs
+	Query map[string]string
 }
 
 func (u *UserClient) prep(req *http.Request) {
@@ -22,8 +22,7 @@ func (u *UserClient) do(req *http.Request) (*http.Response, error) {
 func NewUserClient() *UserClient {
 	return &UserClient{
 		HTTP: &http.Client{
-			Timeout: 10*time.Second,
-			// Jar: jar,
+			Timeout: 10 * time.Second,
 		},
 	}
 }
