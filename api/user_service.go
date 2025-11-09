@@ -57,15 +57,15 @@ func (u *User) Profile(args *ProfileArgs, reply *ProfileReply) error {
 		"limit":      "1",
 	}
 
-	profileRes, err := do[profileResponse](u.Client, "GET", urlProfile, nil)
+	profileRes, err := do[profileResponse](u.Client, "GET", urlProfile, nil, nil)
 	if err != nil {
 		return err
 	}
-	topArtists, err := do[topResponse](u.Client, "GET", urlTopArtists, timeRange)
+	topArtists, err := do[topResponse](u.Client, "GET", urlTopArtists, timeRange, nil)
 	if err != nil {
 		return err
 	}
-	topTracks, err := do[topResponse](u.Client, "GET", urlTopTracks, timeRange)
+	topTracks, err := do[topResponse](u.Client, "GET", urlTopTracks, timeRange, nil)
 	if err != nil {
 		return err
 	}

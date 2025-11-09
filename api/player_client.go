@@ -21,6 +21,7 @@ func NewPlayerClient() *PlayerClient {
 
 func (p *PlayerClient) prep(req *http.Request) {
 	req.Header.Add("Authorization", "Bearer "+p.args.AccessToken)
+	req.Header.Add("Content-Type", "application/json")
 }
 
 func (p *PlayerClient) do(req *http.Request) (*http.Response, error) {

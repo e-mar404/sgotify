@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/charmbracelet/log"
 )
@@ -15,7 +16,7 @@ type Client interface {
 }
 
 // Takes in a client and will Unmarshal the response that it gets into struct T
-func do[T any](c Client, method string, urlPath string, q map[string]string) (reply *T, err error) {
+func do[T any](c Client, method string, urlPath string, q map[string]string, body io.Reader) (reply *T, err error) {
 	query := url.Values{}
 	for key, value := range q {
 		query.Add(key, value)
@@ -24,7 +25,7 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (re
 	fullUrl := urlPath + "?" + query.Encode()
 	log.Debug("created full url", "fullUrl", fullUrl)
 
-	req, err := http.NewRequest(method, fullUrl, nil)
+	req, err := http.NewRequest(method, fullUrl, body)
 	if err != nil {
 		log.Error("could not create request", "method", method, "fullUrl", fullUrl)
 		return nil, err
@@ -42,9 +43,17 @@ func do[T any](c Client, method string, urlPath string, q map[string]string) (re
 
 	defer res.Body.Close()
 
-	body, _ := io.ReadAll(res.Body)
-	log.Debug("raw res body", "body", string(body))
-	if err := json.Unmarshal(body, &reply); err != nil {
+	rawBody, _ := io.ReadAll(res.Body)
+	log.Debug("raw res body", "body", string(rawBody))
+
+	// This endpoint should return 204 with no content but instead it returns 200
+	// with random response, did not find a fix or any mention of it from spotify
+	if strings.Contains(fullUrl, "/me/player/play") && res.StatusCode == http.StatusOK {
+		log.Info("endpoint does not have meaningful return")
+		return reply, nil
+	}
+
+	if err := json.Unmarshal(rawBody, &reply); err != nil {
 		log.Error("could not unmarshal response", "error", err)
 		return nil, err
 	}

@@ -53,7 +53,7 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 		ClientSecret: args.ClientSecret,
 	}
 
-	loginRes, err := do[CredentialsReply](a.Client, "POST", url, q)
+	loginRes, err := do[CredentialsReply](a.Client, "POST", url, q, nil)
 	if err != nil {
 		log.Error("unable to do LoginWithCode req", "error", err)
 		return err
@@ -76,7 +76,7 @@ func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) er
 		ClientID:     args.ClientID,
 		ClientSecret: args.ClientSecret,
 	}
-	creds, err := do[CredentialsReply](a.Client, "POST", url, q)
+	creds, err := do[CredentialsReply](a.Client, "POST", url, q, nil)
 	if err != nil {
 		return err
 	}

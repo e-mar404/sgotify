@@ -1,6 +1,11 @@
 package api
 
-import "github.com/charmbracelet/log"
+import (
+	"bytes"
+	"encoding/json"
+
+	"github.com/charmbracelet/log"
+)
 
 type Player struct {
 	Client *PlayerClient
@@ -9,6 +14,7 @@ type Player struct {
 type PlayerArgs struct {
 	BaseURL     string
 	AccessToken string
+	DeviceID    string
 }
 
 type AvailableDevicesReply struct {
@@ -17,6 +23,22 @@ type AvailableDevicesReply struct {
 		Name   string `json:"name"`
 		Volume int    `json:"volume"`
 	} `json:"devices"`
+}
+
+type PlayReply struct {
+	Error struct {
+		Status  int    `json:"status"`
+		Message string `json:"message"`
+	} `json:"error,omitzero"`
+}
+
+type Offset struct {
+	Position int `json:"position,omitempty"`
+}
+type PlayRequest struct {
+	ContextURI string `json:"context_uri,omitempty"`
+	Offset     Offset `json:"offset,omitzero"`
+	PositionMs int    `json:"position_ms,omitempty"`
 }
 
 func init() {
@@ -36,7 +58,7 @@ func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply
 	p.Client.args.AccessToken = args.AccessToken
 
 	url := args.BaseURL + "/me/player/devices"
-	availableDevices, err := do[AvailableDevicesReply](p.Client, "GET", url, nil)
+	availableDevices, err := do[AvailableDevicesReply](p.Client, "GET", url, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -44,6 +66,35 @@ func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply
 	log.Debug("got reply", "available devices", availableDevices)
 
 	*reply = *availableDevices
+
+	return nil
+}
+
+func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
+	log.Info("called Player.Play")
+
+	p.Client.args = *args
+
+	q := map[string]string{
+		"device_id": args.DeviceID,
+	}
+	u := args.BaseURL + "/me/player/play"
+
+	// TODO: add this to PlayerArgs
+	body := PlayRequest{}
+
+	rawBody, _ := json.Marshal(body)
+	playReply, err := do[PlayReply](p.Client, "PUT", u, q, bytes.NewReader(rawBody))
+	if err != nil {
+		return err
+	}
+
+	// if reply is nil then there is no meaningful return
+	if playReply == nil {
+		return nil
+	}
+
+	*reply = *playReply
 
 	return nil
 }

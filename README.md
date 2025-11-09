@@ -30,17 +30,23 @@ Will use viper for configuration
 - [x] sgotify logout
     - remove auth & refresh tokens, client id and secret and default device id
 
-- [ ] sgotify player
+- [x] sgotify player
     - flag `--list-devices | -l` will list available devices
     - flag `--set-device | -s` will set a device defined by flag `--deviceID=id`
-    - [ ] play 
-        - continue playing wtv was playing before
-        - if song is given as an arg then it will search that song and play the
-          first result with option to pass flag `--select` then you have to
-          select the song out of the first few search results
-    - [ ] pause: pause player
-    - [ ] prev: go to the previously played song
-    - [ ] next: go to the next song 
+
+- [ ] sgotify play 
+    - if no arg then continue playing wtv was playing before on the set
+      player
+    - takes in a spotify uri and then plays it on the set player 
+
+- [ ] sgotify pause
+    - pause player
+
+- [ ] sgotify prev
+    - go to the previously played song
+
+- [ ] sgotify next
+    - go to the next song 
 
 - [x] sgotify server
     - should start the rpc server
@@ -50,6 +56,20 @@ Will use viper for configuration
 ## Default client
 
 Ill be writing the progress of it in here since there is no clear outline yet.
+
+11/08/2025
+================================================================================
+
+Implemented play cmd for resuming already playing media. So does not take any
+args for the spotify uri yet. 
+
+The /me/player/play endpoint is kind of janky because it says a successful
+action will return 204 with no content but instead it return 200 with random
+string. Had to add a specific check on the generic do[T]\(...\) function to just
+return nil as the reply if conditions applied.
+
+There is some error checking but I feel it could be better. That will be ironed
+out with testing whenever I get to that.
 
 11/01/2025
 ================================================================================
