@@ -32,12 +32,12 @@ Will use viper for configuration
 
 - [x] sgotify player
     - flag `--list-devices | -l` will list available devices
-    - flag `--set-device | -s` will set a device defined by flag `--deviceID=id`
+    - flag `--set-device | -s` will set a device defined by flag`
 
-- [ ] sgotify play 
+- [x] sgotify play 
     - if no arg then continue playing wtv was playing before on the set
       player
-    - takes in a spotify uri and then plays it on the set player 
+    - takes in a spotify uri and then plays it on the set player
 
 - [ ] sgotify pause
     - pause player
