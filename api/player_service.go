@@ -12,9 +12,10 @@ type Player struct {
 }
 
 type PlayerArgs struct {
-	BaseURL     string
-	AccessToken string
-	DeviceID    string
+	BaseURL         string
+	AccessToken     string
+	DeviceID        string
+	PlayRequestBody PlayRequestBody
 }
 
 type AvailableDevicesReply struct {
@@ -35,10 +36,11 @@ type PlayReply struct {
 type Offset struct {
 	Position int `json:"position,omitempty"`
 }
-type PlayRequest struct {
-	ContextURI string `json:"context_uri,omitempty"`
-	Offset     Offset `json:"offset,omitzero"`
-	PositionMs int    `json:"position_ms,omitempty"`
+type PlayRequestBody struct {
+	ContextURI string   `json:"context_uri,omitempty"`
+	URIS       []string `json:"uris,omitempty"`
+	Offset     Offset   `json:"offset,omitzero"`
+	PositionMs int      `json:"position_ms,omitempty"`
 }
 
 func init() {
@@ -80,8 +82,7 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
 	}
 	u := args.BaseURL + "/me/player/play"
 
-	// TODO: add this to PlayerArgs
-	body := PlayRequest{}
+	body := args.PlayRequestBody
 
 	rawBody, _ := json.Marshal(body)
 	playReply, err := do[PlayReply](p.Client, "PUT", u, q, bytes.NewReader(rawBody))
@@ -89,7 +90,8 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
 		return err
 	}
 
-	// if reply is nil then there is no meaningful return
+	// if reply is nil then there is no meaningful return, check spotify api for
+	// context
 	if playReply == nil {
 		return nil
 	}

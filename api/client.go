@@ -47,8 +47,11 @@ func do[T any](c Client, method string, urlPath string, q map[string]string, bod
 	log.Debug("raw res body", "body", string(rawBody))
 
 	// This endpoint should return 204 with no content but instead it returns 200
-	// with random response, did not find a fix or any mention of it from spotify
-	if strings.Contains(fullUrl, "/me/player/play") && res.StatusCode == http.StatusOK {
+	// with random response when sending an empty body, did not find a fix or any
+	// mention of it from spotify
+	if strings.Contains(fullUrl, "/me/player/play") &&
+		res.StatusCode == http.StatusOK ||
+		res.StatusCode == http.StatusNoContent {
 		log.Info("endpoint does not have meaningful return")
 		return reply, nil
 	}
