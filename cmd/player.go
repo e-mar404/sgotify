@@ -33,32 +33,43 @@ var (
 				return
 			}
 
-			if list {
+			switch {
+			case list:
 				printDeviceList(reply)
-				return
-			}
-
-			if device == "" {
-				fmt.Printf("no device was passed, please give a device to set as the player\n")
-				log.Info("no device string passed to set device")
-				return
-			}
-
-			for _, d := range reply.Devices {
-				if d.ID == device {
-					viper.Set("device_id", device)
-					if err := viper.WriteConfig(); err != nil {
-						fmt.Printf("unable to write device id to config\n")
-						log.Fatal("could not write to config", "error", err)
-					}
-					fmt.Printf("Player %s set successfully!\n", d.Name)
-					return
+			case device == "":
+				deviceID := viper.GetString("device_id")
+				if deviceID == "" {
+					fmt.Printf("No device set in configuration. Please run sgotify player --set-device=<device_id> to set a device\n")
+					log.Info("no device set in configuration")
 				}
-			}
 
-			fmt.Printf("given device id was not a valid device id from the list of available devices\n\n")
-			log.Info("device given not found", "device", device)
-			printDeviceList(reply)
+				for _, d := range reply.Devices {
+					if d.ID == deviceID {
+						fmt.Printf("Current selected device:\n\n")
+						fmt.Printf("ID: %s\n", d.ID)
+						fmt.Printf("Name: %s\n", d.Name)
+
+						break
+					}
+				}
+
+			case device != "":
+				for _, d := range reply.Devices {
+					if d.ID == device {
+						viper.Set("device_id", device)
+						if err := viper.WriteConfig(); err != nil {
+							fmt.Printf("unable to write device id to config\n")
+							log.Fatal("could not write to config", "error", err)
+						}
+						fmt.Printf("Player %s set successfully!\n", d.Name)
+						return
+					}
+				}
+
+				fmt.Printf("given device id was not a valid device id from the list of available devices\n\n")
+				log.Info("device given not found", "device", device)
+				printDeviceList(reply)
+			}
 		},
 	}
 )
