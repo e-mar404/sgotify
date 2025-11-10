@@ -42,7 +42,7 @@ Will use viper for configuration
 - [x] sgotify pause
     - pause player
 
-- [ ] sgotify prev
+- [x] sgotify prev
     - go to the previously played song
 
 - [x] sgotify next
@@ -56,6 +56,22 @@ Will use viper for configuration
 ## Default client
 
 Ill be writing the progress of it in here since there is no clear outline yet.
+
+11/10/2025
+================================================================================
+
+Wrote a few new commands to interact with what is currently playing. Having to
+write commands that dont really interact with the server other than making a new
+function to handle that new command it is showing some cracks on the design.
+
+I need to make sure I go through the client and the services one more time
+before finalizing the design because there is some uneccessary ceremony that I
+have been doing to get some things to work.
+
+After finalizing the design I can go back and write tests to make sure that any
+new features I add later one dont break the minimum functionality I have as of
+now.
+
 
 11/08/2025
 ================================================================================
