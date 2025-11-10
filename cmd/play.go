@@ -34,7 +34,7 @@ var (
 				},
 			}
 
-			var reply api.PlayReply
+			var reply api.PlayerReply
 			err := client.Call("Player.Play", &playerArgs, &reply)
 			if err != nil {
 				fmt.Printf("could not play media on device\n")
@@ -46,7 +46,7 @@ var (
 				log.Fatal("unsuccessful action from spotify api", "status", reply.Error.Status, "message", reply.Error.Message)
 			}
 
-			fmt.Printf("Resuming media on device\n")
+			fmt.Printf("Playback resumed on device\n")
 		},
 	}
 )

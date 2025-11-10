@@ -26,7 +26,7 @@ type AvailableDevicesReply struct {
 	} `json:"devices"`
 }
 
-type PlayReply struct {
+type PlayerReply struct {
 	Error struct {
 		Status  int    `json:"status"`
 		Message string `json:"message"`
@@ -72,7 +72,7 @@ func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply
 	return nil
 }
 
-func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
+func (p *Player) Play(args *PlayerArgs, reply *PlayerReply) error {
 	log.Info("called Player.Play")
 
 	p.Client.args = *args
@@ -85,7 +85,7 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
 	body := args.PlayRequestBody
 
 	rawBody, _ := json.Marshal(body)
-	playReply, err := do[PlayReply](p.Client, "PUT", u, q, bytes.NewReader(rawBody))
+	playReply, err := do[PlayerReply](p.Client, "PUT", u, q, bytes.NewReader(rawBody))
 	if err != nil {
 		return err
 	}
@@ -97,6 +97,31 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayReply) error {
 	}
 
 	*reply = *playReply
+
+	return nil
+}
+
+func (p *Player) Pause(args *PlayerArgs, reply *PlayerReply) error {
+	log.Info("called Play.Pause")
+
+	p.Client.args = *args
+
+	q := map[string]string{
+		"device_id": args.DeviceID,
+	}
+	u := args.BaseURL + "/me/player/pause"
+
+	pauseReply, err := do[PlayerReply](p.Client, "PUT", u, q, nil)
+	if err != nil {
+		return err
+	}
+
+	// if there is no meaningful return
+	if pauseReply == nil {
+		return nil
+	}
+
+	*reply = *pauseReply
 
 	return nil
 }
