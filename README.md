@@ -19,8 +19,10 @@ Will use viper for configuration
     - will start the tui client
     - for now it is just a charm model that displays a "coming soon" msg
 
-- [ ] sgotify help
-    - formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all available commands and what they do
+- [x] sgotify help
+    - using the default help menu for now
+    - at some point use formatted output with [lipgloss](https://github.com/charmbracelet/lipgloss) of all 
+    available commands and what they do
 
 - [x] sgotify login
     - will start login process with http server
