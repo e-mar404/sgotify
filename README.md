@@ -39,13 +39,13 @@ Will use viper for configuration
       player
     - takes in a spotify uri and then plays it on the set player
 
-- [ ] sgotify pause
+- [x] sgotify pause
     - pause player
 
 - [ ] sgotify prev
     - go to the previously played song
 
-- [ ] sgotify next
+- [x] sgotify next
     - go to the next song 
 
 - [x] sgotify server

@@ -125,3 +125,24 @@ func (p *Player) Pause(args *PlayerArgs, reply *PlayerReply) error {
 
 	return nil
 }
+
+func (p *Player) Next(args *PlayerArgs, reply *PlayerReply) error {
+	log.Info("Calling Player.Next")
+
+	p.Client.args = *args
+
+	u := args.BaseURL + "/me/player/next"
+
+	nextReply, err := do[PlayerReply](p.Client, "POST", u, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	if nextReply == nil {
+		return nil
+	}
+
+	*reply = *nextReply
+
+	return nil
+}

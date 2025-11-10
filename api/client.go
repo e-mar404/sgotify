@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
+	"regexp"
 
 	"github.com/charmbracelet/log"
 )
@@ -49,7 +49,9 @@ func do[T any](c Client, method string, urlPath string, q map[string]string, bod
 	// The player endpoints should return 204 with no content but instead it
 	// returns 200 with random response when sending an empty body, did not find a
 	// fix or any mention of it from spotify
-	if strings.Contains(fullUrl, "/me/player") &&
+	noContentEndpoint, _ := regexp.Compile("/me/player/[play|pause|next]")
+
+	if noContentEndpoint.Match([]byte(fullUrl)) &&
 		res.StatusCode == http.StatusOK ||
 		res.StatusCode == http.StatusNoContent {
 		log.Info("endpoint does not have meaningful return")
