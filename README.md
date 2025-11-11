@@ -50,6 +50,14 @@ Will use viper for configuration
 - [x] sgotify next
     - go to the next song 
 
+- [ ] sgotify search
+    - search for things in spotify
+    - needs the following flags:
+        - album
+        - artist
+        - track
+        - type (default to album,artist,playlist,track)
+
 - [x] sgotify server
     - should start the rpc server
     - will have regular logging by default 
