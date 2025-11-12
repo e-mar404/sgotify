@@ -23,6 +23,8 @@ var (
 			searchArgs := api.SearchArgs{
 				BaseURL:     viper.GetString("spotify_api_url"),
 				AccessToken: viper.GetString("access_token"),
+				Album:       album,
+				Artist:      artist,
 				Track:       track,
 				Type:        sreachType,
 			}
@@ -51,8 +53,15 @@ func init() {
 }
 
 func printResults(results api.SearchReply) {
+	printArtists(results.Artists.Items)
+	printPlaylists(results.Playlist.Items)
+	printAlbums(results.Albums.Items)
+	printTracks(results.Tracks.Items)
+}
+
+func printTracks(tracks []api.TrackItem) {
 	fmt.Printf("Tracks:\n\n")
-	for _, track := range results.Tracks.Items {
+	for _, track := range tracks {
 		fmt.Printf("Name: %s\n", track.Name)
 
 		artists := ""
@@ -62,5 +71,36 @@ func printResults(results api.SearchReply) {
 		fmt.Printf("By: %s\n", artists)
 
 		fmt.Printf("URI: %s\n\n", track.URI)
+	}
+}
+
+func printArtists(artists []api.ArtistItem) {
+	fmt.Printf("Artists:\n\n")
+	for _, artist := range artists {
+		fmt.Printf("Name: %s\n", artist.Name)
+		fmt.Printf("URI: %s\n\n", artist.URI)
+	}
+}
+
+func printPlaylists(playlists []api.PlaylistItem) {
+	fmt.Printf("Playlists:\n\n")
+	for _, playlist := range playlists {
+		fmt.Printf("Name: %s\n", playlist.Name)
+		fmt.Printf("URI: %s\n\n", playlist.URI)
+	}
+}
+
+func printAlbums(albums []api.AlbumItem) {
+	fmt.Printf("Albums:\n\n")
+	for _, album := range albums {
+		fmt.Printf("Name: %s\n", album.Name)
+
+		artists := ""
+		for _, artist := range album.Artists {
+			artists += artist.Name + ", "
+		}
+		fmt.Printf("By: %s\n", artists)
+
+		fmt.Printf("URI: %s\n\n", album.URI)
 	}
 }
