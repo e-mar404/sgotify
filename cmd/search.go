@@ -10,24 +10,15 @@ import (
 )
 
 var (
-	album      string
-	artist     string
-	track      string
-	sreachType []string
+	searchArgs api.SearchArgs
 
 	searchCmd = &cobra.Command{
 		Use:   "search",
 		Short: "search spotify for media",
 		Run: func(cmd *cobra.Command, args []string) {
 			var reply api.SearchReply
-			searchArgs := api.SearchArgs{
-				BaseURL:     viper.GetString("spotify_api_url"),
-				AccessToken: viper.GetString("access_token"),
-				Album:       album,
-				Artist:      artist,
-				Track:       track,
-				Type:        sreachType,
-			}
+			searchArgs.BaseURL = viper.GetString("spotify_api_url")
+			searchArgs.AccessToken = viper.GetString("access_token")
 
 			err := client.Call("Search.Search", &searchArgs, &reply)
 			if err != nil {
@@ -43,12 +34,36 @@ var (
 func init() {
 	defaultSearchType := []string{"album", "artist", "track"}
 
-	searchCmd.Flags().StringVar(&album, "album", "", "filter down results to items with this album title")
-	searchCmd.Flags().StringVar(&artist, "artist", "", "filter down results to items with from this artist")
-	searchCmd.Flags().StringVar(&track, "track", "", "filter down results to items with this string on the track name")
-	searchCmd.Flags().StringSliceVar(&sreachType, "type", defaultSearchType, "list of item types to search across")
+	searchCmd.Flags().StringVar(
+		&searchArgs.Album,
+		"album",
+		"",
+		"filter down results to items with this album title",
+	)
+
+	searchCmd.Flags().StringVar(
+		&searchArgs.Artist,
+		"artist",
+		"",
+		"filter down results to items with from this artist",
+	)
+
+	searchCmd.Flags().StringVar(
+		&searchArgs.Track,
+		"track",
+		"",
+		"filter down results to items with this string on the track name",
+	)
+
+	searchCmd.Flags().StringSliceVar(
+		&searchArgs.Type,
+		"type",
+		defaultSearchType,
+		"list of item types to search across",
+	)
 
 	searchCmd.MarkFlagsOneRequired("album", "artist", "track")
+
 	rootCmd.AddCommand(searchCmd)
 }
 
