@@ -50,7 +50,7 @@ Will use viper for configuration
 - [x] sgotify next
     - go to the next song 
 
-- [ ] sgotify search
+- [x] sgotify search
     - search for things in spotify
     - needs the following flags:
         - album
