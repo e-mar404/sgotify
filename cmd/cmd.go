@@ -44,8 +44,6 @@ func initConfig() {
 	log.SetOutput(os.Stderr)
 	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
 
-	viper.SetDefault("spotify_account_url", "https://accounts.spotify.com")
-	viper.SetDefault("spotify_api_url", "https://api.spotify.com/v1")
 	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
 	viper.SetDefault("client_id", "")
 	viper.SetDefault("client_secret", "")
