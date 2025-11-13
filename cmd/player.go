@@ -18,7 +18,6 @@ var (
 		Short: "command to interact with a spotify player state",
 		Run: func(cmd *cobra.Command, _ []string) {
 			args := &api.PlayerArgs{
-				BaseURL:     viper.GetString("spotify_api_url"),
 				AccessToken: viper.GetString("access_token"),
 			}
 			reply := &api.AvailableDevicesReply{}

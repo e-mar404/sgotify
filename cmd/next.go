@@ -16,7 +16,6 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			var reply api.PlayerReply
 			nextArgs := api.PlayerArgs{
-				BaseURL:     viper.GetString("spotify_api_url"),
 				AccessToken: viper.GetString("access_token"),
 				DeviceID:    viper.GetString("device_id"),
 			}

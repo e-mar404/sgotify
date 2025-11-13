@@ -12,7 +12,6 @@ type Player struct {
 }
 
 type PlayerArgs struct {
-	BaseURL         string
 	AccessToken     string
 	DeviceID        string
 	PlayRequestBody PlayRequestBody
@@ -56,10 +55,9 @@ func NewPlayerService() *Player {
 func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply) error {
 	log.Info("called Player.AvailableDevices")
 
-	p.Client.args.BaseURL = args.BaseURL
 	p.Client.args.AccessToken = args.AccessToken
 
-	url := args.BaseURL + "/me/player/devices"
+	url := apiBaseURL + "/me/player/devices"
 	availableDevices, err := do[AvailableDevicesReply](p.Client, "GET", url, nil, nil)
 	if err != nil {
 		return err
@@ -80,7 +78,7 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayerReply) error {
 	q := map[string]string{
 		"device_id": args.DeviceID,
 	}
-	u := args.BaseURL + "/me/player/play"
+	u := apiBaseURL + "/me/player/play"
 
 	body := args.PlayRequestBody
 
@@ -109,7 +107,7 @@ func (p *Player) Pause(args *PlayerArgs, reply *PlayerReply) error {
 	q := map[string]string{
 		"device_id": args.DeviceID,
 	}
-	u := args.BaseURL + "/me/player/pause"
+	u := apiBaseURL + "/me/player/pause"
 
 	pauseReply, err := do[PlayerReply](p.Client, "PUT", u, q, nil)
 	if err != nil {
@@ -131,7 +129,7 @@ func (p *Player) Next(args *PlayerArgs, reply *PlayerReply) error {
 
 	p.Client.args = *args
 
-	u := args.BaseURL + "/me/player/next"
+	u := apiBaseURL + "/me/player/next"
 
 	nextReply, err := do[PlayerReply](p.Client, "POST", u, nil, nil)
 	if err != nil {
@@ -152,7 +150,7 @@ func (p *Player) Prev(args *PlayerArgs, reply *PlayerReply) error {
 
 	p.Client.args = *args
 
-	u := args.BaseURL + "/me/player/previous"
+	u := apiBaseURL + "/me/player/previous"
 
 	nextReply, err := do[PlayerReply](p.Client, "POST", u, nil, nil)
 	if err != nil {

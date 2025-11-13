@@ -17,7 +17,6 @@ var (
 		Short:  "will start/resume playback on the set player",
 		PreRun: checkSavedPlayer,
 		Run: func(cmd *cobra.Command, args []string) {
-			playerArgs.BaseURL = viper.GetString("spotify_api_url")
 			playerArgs.AccessToken = viper.GetString("access_token")
 			playerArgs.DeviceID = viper.GetString("device_id")
 

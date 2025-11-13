@@ -78,7 +78,6 @@ func requireAuth(cmd *cobra.Command, args []string) {
 
 	refreshArgs := api.RefreshArgs{
 		RefreshToken: viper.GetString("refresh_token"),
-		BaseURL:      viper.GetString("spotify_account_url"),
 		ClientID:     viper.GetString("client_id"),
 		ClientSecret: viper.GetString("client_secret"),
 	}

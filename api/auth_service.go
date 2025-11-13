@@ -12,14 +12,12 @@ type LoginArgs struct {
 	ClientID     string
 	ClientSecret string
 	RedirectURI  string
-	BaseURL      string
 	Code         string
 	State        string
 }
 
 type RefreshArgs struct {
 	RefreshToken string
-	BaseURL      string
 	ClientID     string
 	ClientSecret string
 }
@@ -47,7 +45,7 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 		"redirect_uri": args.RedirectURI,
 		"grant_type":   "authorization_code",
 	}
-	url := args.BaseURL + "/api/token"
+	url := accountBaseURL + "/api/token"
 	a.Client.prepArgs = authPrepArgs{
 		ClientID:     args.ClientID,
 		ClientSecret: args.ClientSecret,
@@ -71,7 +69,7 @@ func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) er
 		"grant_type":    "refresh_token",
 		"refresh_token": args.RefreshToken,
 	}
-	url := args.BaseURL + "/api/token"
+	url := accountBaseURL + "/api/token"
 	a.Client.prepArgs = authPrepArgs{
 		ClientID:     args.ClientID,
 		ClientSecret: args.ClientSecret,

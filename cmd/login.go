@@ -70,7 +70,6 @@ var (
 				ClientID:     cid,
 				ClientSecret: cs,
 				RedirectURI:  viper.GetString("redirect_uri"),
-				BaseURL:      viper.GetString("spotify_account_url"),
 				Code:         code.Code,
 				State:        code.State,
 			}

@@ -17,10 +17,9 @@ var (
 		Short: "search spotify for media",
 		Run: func(cmd *cobra.Command, args []string) {
 			var reply api.SearchReply
-			searchArgs.BaseURL = viper.GetString("spotify_api_url")
 			searchArgs.AccessToken = viper.GetString("access_token")
 
-			err := client.Call("Search.Search", &searchArgs, &reply)
+			err := client.Call("Search.Catalog", &searchArgs, &reply)
 			if err != nil {
 				fmt.Printf("unexpected error occurred\n")
 				log.Fatal("unexpected error", "error", err)

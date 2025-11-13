@@ -6,7 +6,6 @@ import (
 )
 
 type SearchArgs struct {
-	BaseURL     string
 	AccessToken string
 	Track       string
 	Artist      string
@@ -74,8 +73,8 @@ func NewSearchService() *Search {
 	}
 }
 
-func (s *Search) Search(args *SearchArgs, reply *SearchReply) error {
-	u := args.BaseURL + "/search"
+func (s *Search) Catalog(args *SearchArgs, reply *SearchReply) error {
+	u := apiBaseURL + "/search"
 	// TODO: should convert the url encoding into a function or something since im
 	// manually url encoding for poc
 	subQuery := url.Values{}
