@@ -23,7 +23,7 @@ func do[T any](c Client, method string, urlPath string, q map[string]string, bod
 	}
 
 	fullUrl := urlPath + "?" + query.Encode()
-	log.Debug("created full url", "fullUrl", fullUrl)
+	log.Debug("url for request created", "fullUrl", fullUrl, "method", method)
 
 	req, err := http.NewRequest(method, fullUrl, body)
 	if err != nil {
@@ -39,12 +39,11 @@ func do[T any](c Client, method string, urlPath string, q map[string]string, bod
 	}
 	log.Debug("completed request", "status", res.Status)
 
-	// TODO: check status code here
+	// TODO: should prob check status code here
 
 	defer res.Body.Close()
 
 	rawBody, _ := io.ReadAll(res.Body)
-	log.Debug("raw res body", "body", string(rawBody))
 
 	// The player endpoints should return 204 with no content but instead it
 	// returns 200 with random response when sending an empty body, did not find a
@@ -63,6 +62,5 @@ func do[T any](c Client, method string, urlPath string, q map[string]string, bod
 		return nil, err
 	}
 
-	log.Debug("returning unmashaled res body", "resStruct", *reply)
 	return reply, nil
 }

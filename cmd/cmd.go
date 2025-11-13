@@ -20,8 +20,7 @@ var (
 		Short:            "start tui client",
 		PersistentPreRun: batch(prepLogs, startClient, requireAuth),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("tui client coming soon...\n")
-
+			fmt.Printf("deciding what to put in here...\n")
 		},
 	}
 )
@@ -41,9 +40,6 @@ func Execute() {
 }
 
 func initConfig() {
-	log.SetOutput(os.Stderr)
-	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
-
 	viper.SetDefault("redirect_uri", "http://127.0.0.1:8080/callback")
 	viper.SetDefault("client_id", "")
 	viper.SetDefault("client_secret", "")

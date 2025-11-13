@@ -1,8 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"net/url"
 	"strings"
+
+	"github.com/charmbracelet/log"
 )
 
 type SearchArgs struct {
@@ -74,6 +77,8 @@ func NewSearchService() *Search {
 }
 
 func (s *Search) Catalog(args *SearchArgs, reply *SearchReply) error {
+	log.Info("Search.Catalog called")
+
 	u := apiBaseURL + "/search"
 	// TODO: should convert the url encoding into a function or something since im
 	// manually url encoding for poc
@@ -95,6 +100,10 @@ func (s *Search) Catalog(args *SearchArgs, reply *SearchReply) error {
 	}
 
 	*reply = *searchReply
+
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "SearchReply", string(jsonReply))
+	log.Info("Search.Catalog sent reply")
 
 	return nil
 }

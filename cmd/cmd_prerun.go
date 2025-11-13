@@ -23,6 +23,7 @@ func batch(cmds ...func(*cobra.Command, []string)) func(*cobra.Command, []string
 }
 
 func prepLogs(cmd *cobra.Command, args []string) {
+	var level log.Level
 	baseLevel := log.Level(13)
 	verboseLevel := log.Level(0)
 	if cmd.Use == "server" { // only the server cmd will have logs by default
@@ -31,10 +32,20 @@ func prepLogs(cmd *cobra.Command, args []string) {
 	}
 
 	if verbose {
-		log.SetLevel(verboseLevel)
+		level = verboseLevel
 	} else {
-		log.SetLevel(baseLevel)
+		level = baseLevel
 	}
+
+	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
+	logger := log.NewWithOptions(os.Stderr, log.Options{
+		Level:           level,
+		ReportCaller:    true,
+		ReportTimestamp: true,
+		Formatter:       log.TextFormatter,
+	})
+
+	log.SetDefault(logger)
 }
 
 func startClient(cmd *cobra.Command, _ []string) {

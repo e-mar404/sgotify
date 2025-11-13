@@ -53,7 +53,7 @@ func NewPlayerService() *Player {
 }
 
 func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply) error {
-	log.Info("called Player.AvailableDevices")
+	log.Info("Player.AvailableDevices called")
 
 	p.Client.args.AccessToken = args.AccessToken
 
@@ -63,15 +63,17 @@ func (p *Player) AvailableDevices(args *PlayerArgs, reply *AvailableDevicesReply
 		return err
 	}
 
-	log.Debug("got reply", "available devices", availableDevices)
-
 	*reply = *availableDevices
+
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "AvailableDevicesReply", string(jsonReply))
+	log.Info("Player.AvailableDevices sent reply")
 
 	return nil
 }
 
 func (p *Player) Play(args *PlayerArgs, reply *PlayerReply) error {
-	log.Info("called Player.Play")
+	log.Info("Player.Play called")
 
 	p.Client.args = *args
 
@@ -91,16 +93,21 @@ func (p *Player) Play(args *PlayerArgs, reply *PlayerReply) error {
 	// if reply is nil then there is no meaningful return, check spotify api for
 	// context
 	if playReply == nil {
+		log.Debug("no content to reply")
 		return nil
 	}
 
 	*reply = *playReply
 
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "PlayerReply", string(jsonReply))
+	log.Info("Player.Play sent reply")
+
 	return nil
 }
 
 func (p *Player) Pause(args *PlayerArgs, reply *PlayerReply) error {
-	log.Info("called Play.Pause")
+	log.Info("Play.Pause called")
 
 	p.Client.args = *args
 
@@ -116,16 +123,21 @@ func (p *Player) Pause(args *PlayerArgs, reply *PlayerReply) error {
 
 	// if there is no meaningful return
 	if pauseReply == nil {
+		log.Debug("no content to reply")
 		return nil
 	}
 
 	*reply = *pauseReply
 
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "PlayerReply", string(jsonReply))
+	log.Info("Player.Pause sent reply")
+
 	return nil
 }
 
 func (p *Player) Next(args *PlayerArgs, reply *PlayerReply) error {
-	log.Info("Calling Player.Next")
+	log.Info("Player.Next called")
 
 	p.Client.args = *args
 
@@ -137,16 +149,21 @@ func (p *Player) Next(args *PlayerArgs, reply *PlayerReply) error {
 	}
 
 	if nextReply == nil {
+		log.Debug("no content to reply")
 		return nil
 	}
 
 	*reply = *nextReply
 
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "PlayerReply", string(jsonReply))
+	log.Info("Player.Next sent reply")
+
 	return nil
 }
 
 func (p *Player) Prev(args *PlayerArgs, reply *PlayerReply) error {
-	log.Info("Calling Player.Next")
+	log.Info("Player.Prev called")
 
 	p.Client.args = *args
 
@@ -158,10 +175,15 @@ func (p *Player) Prev(args *PlayerArgs, reply *PlayerReply) error {
 	}
 
 	if nextReply == nil {
+		log.Debug("no content to reply")
 		return nil
 	}
 
 	*reply = *nextReply
+
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "PlayerReply", string(jsonReply))
+	log.Info("Player.Prev sent reply")
 
 	return nil
 }

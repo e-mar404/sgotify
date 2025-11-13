@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+
 	"github.com/charmbracelet/log"
 )
 
@@ -38,7 +40,7 @@ func NewAuthService() *Auth {
 }
 
 func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
-	log.Info("called Auth.LoginWithCode")
+	log.Info("Auth.LoginWithCode called")
 
 	q := map[string]string{
 		"code":         args.Code,
@@ -58,6 +60,10 @@ func (a *Auth) LoginWithCode(args *LoginArgs, reply *CredentialsReply) error {
 	}
 
 	*reply = *loginRes
+
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "CredentialReply", string(jsonReply))
+	log.Info("Auth.LoginWithCode sent reply")
 
 	return nil
 }
@@ -80,6 +86,10 @@ func (a *Auth) RefreshAccessToken(args *RefreshArgs, reply *CredentialsReply) er
 	}
 
 	*reply = *creds
+
+	jsonReply, _ := json.MarshalIndent(*reply, "", " ")
+	log.Debug("sending reply", "CredentialReply", string(jsonReply))
+	log.Info("Auth.RefreshAccessToken sent reply")
 
 	return nil
 }
