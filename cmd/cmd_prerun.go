@@ -5,8 +5,10 @@ import (
 	"net"
 	"net/rpc"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 	"github.com/e-mar404/sgotify/api"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
@@ -37,15 +39,36 @@ func prepLogs(cmd *cobra.Command, args []string) {
 		level = baseLevel
 	}
 
-	// TODO: should expand the title on the log to have a max width of 5 on the logs that get cut off (Fatal, Debug, Error)
+	styles := log.DefaultStyles()
+
+	styles.Levels[log.DebugLevel] = lipgloss.NewStyle().
+				SetString(strings.ToUpper(log.DebugLevel.String())).
+				Bold(true).
+				MaxWidth(5).
+				Foreground(lipgloss.Color("63"))
+
+	styles.Levels[log.ErrorLevel] = lipgloss.NewStyle().
+				SetString(strings.ToUpper(log.ErrorLevel.String())).
+				Bold(true).
+				MaxWidth(5).
+				Foreground(lipgloss.Color("204"))
+
+	styles.Levels[log.FatalLevel] = lipgloss.NewStyle().
+				SetString(strings.ToUpper(log.FatalLevel.String())).
+				Bold(true).
+				MaxWidth(5).
+				Foreground(lipgloss.Color("134"))
+
 	logger := log.NewWithOptions(os.Stderr, log.Options{
 		Level:           level,
 		ReportCaller:    true,
+		
 		ReportTimestamp: true,
 		Formatter:       log.TextFormatter,
 	})
 
 	log.SetDefault(logger)
+	log.SetStyles(styles)
 }
 
 func startClient(cmd *cobra.Command, _ []string) {
@@ -56,7 +79,7 @@ func startClient(cmd *cobra.Command, _ []string) {
 
 	conn, err := net.Dial("tcp", "localhost:5000")
 	if err != nil {
-		fmt.Printf("couldn't find rpc server\n")
+		fmt.Printf("couldn't find rpc server. Please run sgotify server\n")
 		log.Fatal("unable to connect to server", "error", err)
 	}
 	client = rpc.NewClientWithCodec(msgpackrpc.NewClientCodec(conn))
