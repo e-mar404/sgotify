@@ -67,6 +67,16 @@ Will use viper for configuration
 
 Ill be writing the progress of it in here since there is no clear outline yet.
 
+11/13/2025
+================================================================================
+
+Base functionality is done, logging in and out and the basic actions like
+setting a device to set playback and control playback.
+
+Now that the rpc server is done now I need to start writing tests and making
+sure that the api/interface that I chose is a good one.
+
+
 11/10/2025
 ================================================================================
 
