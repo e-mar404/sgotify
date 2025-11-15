@@ -42,27 +42,27 @@ func prepLogs(cmd *cobra.Command, args []string) {
 	styles := log.DefaultStyles()
 
 	styles.Levels[log.DebugLevel] = lipgloss.NewStyle().
-				SetString(strings.ToUpper(log.DebugLevel.String())).
-				Bold(true).
-				MaxWidth(5).
-				Foreground(lipgloss.Color("63"))
+		SetString(strings.ToUpper(log.DebugLevel.String())).
+		Bold(true).
+		MaxWidth(5).
+		Foreground(lipgloss.Color("63"))
 
 	styles.Levels[log.ErrorLevel] = lipgloss.NewStyle().
-				SetString(strings.ToUpper(log.ErrorLevel.String())).
-				Bold(true).
-				MaxWidth(5).
-				Foreground(lipgloss.Color("204"))
+		SetString(strings.ToUpper(log.ErrorLevel.String())).
+		Bold(true).
+		MaxWidth(5).
+		Foreground(lipgloss.Color("204"))
 
 	styles.Levels[log.FatalLevel] = lipgloss.NewStyle().
-				SetString(strings.ToUpper(log.FatalLevel.String())).
-				Bold(true).
-				MaxWidth(5).
-				Foreground(lipgloss.Color("134"))
+		SetString(strings.ToUpper(log.FatalLevel.String())).
+		Bold(true).
+		MaxWidth(5).
+		Foreground(lipgloss.Color("134"))
 
 	logger := log.NewWithOptions(os.Stderr, log.Options{
-		Level:           level,
-		ReportCaller:    true,
-		
+		Level:        level,
+		ReportCaller: true,
+
 		ReportTimestamp: true,
 		Formatter:       log.TextFormatter,
 	})
@@ -72,7 +72,7 @@ func prepLogs(cmd *cobra.Command, args []string) {
 }
 
 func startClient(cmd *cobra.Command, _ []string) {
-	if cmd.Use == "server" {
+	if cmd.Use == "server" || cmd.Use == "checkhealth" {
 		log.Info("this command does not require rpc client", "cmd", cmd.Use)
 		return
 	}
@@ -86,7 +86,7 @@ func startClient(cmd *cobra.Command, _ []string) {
 }
 
 func requireAuth(cmd *cobra.Command, args []string) {
-	if cmd.Use == "login" || cmd.Use == "logout" || cmd.Use == "server" {
+	if cmd.Use == "login" || cmd.Use == "logout" || cmd.Use == "server" || cmd.Use == "checkhealth" {
 		log.Info("this command does not require auth", "cmd", cmd.Use)
 		return
 	}

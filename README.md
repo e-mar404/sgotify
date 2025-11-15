@@ -63,9 +63,30 @@ Will use viper for configuration
     - will have regular logging by default 
     - flag `-v` will show all the logs, including debug
 
+- [x] sgotify checkhealth
+    - existing config file
+    - valid config file
+    - accessible server
+    - able to call server and get response back
+    - proper login info
+
 ## Default client
 
 Ill be writing the progress of it in here since there is no clear outline yet.
+
+11/15/2025
+================================================================================
+
+Writing a checkhealth command that will check for:
+    - existing config file
+    - valid config file
+    - accessible server
+    - able to call server and get response back
+    - proper login info
+
+This should feel like running a test so a user knows that most things are in
+order and if anything fails after all the needed commands are run then it should
+likely that there is bug.
 
 11/13/2025
 ================================================================================
