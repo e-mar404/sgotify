@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"net/rpc"
 	"os"
 	"path/filepath"
@@ -20,7 +19,6 @@ var (
 		Short:            "start tui client",
 		PersistentPreRun: batch(prepLogs, startClient, requireAuth),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("deciding what to put in here...\n")
 		},
 	}
 )

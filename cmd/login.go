@@ -35,6 +35,7 @@ var (
 			credsExist := cid != "" && cs != ""
 			useSavedCreds := "n"
 			if credsExist {
+				// TODO: does not default to Y if only enter is pressed
 				prompt("Use saved creds? [Y|n] ", &useSavedCreds, "Y")
 			}
 
@@ -140,9 +141,9 @@ func startHTTPServer(resChan chan Code) {
 			State: s,
 		}
 
-		resChan <- res
-
 		w.Write([]byte("you can close the tab now"))
+
+		resChan <- res
 	})
 
 	http.Handle("/", redirectHandler)

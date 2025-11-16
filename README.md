@@ -15,9 +15,8 @@ neovim).
 
 Will use viper for configuration
 
-- [ ] sgotify 
-    - will start the tui client
-    - for now it is just a charm model that displays a "coming soon" msg
+- [x] sgotify 
+    - root cmd
 
 - [x] sgotify help
     - using the default help menu for now
